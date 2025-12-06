@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
                             For Now Automation tests cannot run in production
                         </p>
                         <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
-                            Selenium tests only execute when the developer's local machine is running the automation worker.
+                            The tests only execute when the developer's local machine is running the automation worker.
                         </p>
                     </div>
                 </div>
