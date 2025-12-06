@@ -39,14 +39,15 @@ func main() {
 	app.Use(logger.New())
 	app.Use(recover.New())
 
-	// Dynamic CORS
 	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
 	if allowedOrigin == "" {
-		allowedOrigin = "*" // Default for local dev
+		log.Println("ALLOWED_ORIGIN env is empty, defaulting to '*'")
+		allowedOrigin = "*" // Untuk dev saja, production harus set
 	}
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: allowedOrigin,
 		AllowHeaders: "Origin, Content-Type, Accept",
+		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
 	}))
 
 	// 5. Routes
