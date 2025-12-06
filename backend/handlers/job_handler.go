@@ -16,8 +16,33 @@ import (
 
 // QueueJob adds a new job to the queue
 func QueueJob(c *fiber.Ctx) error {
+	var body struct {
+		ProjectID string `json:"projectId"`
+		Type      string `json:"type"`
+	}
+
+	if err := c.BodyParser(&body); err != nil {
+		return utils.SendError(c, fiber.StatusBadRequest, "Invalid request body")
+	}
+
+	// Default to generic if no project ID (for backward compatibility or global tasks)
+	// But ideally we want a project ID.
+	var projID primitive.ObjectID
+	if body.ProjectID != "" {
+		pid, err := primitive.ObjectIDFromHex(body.ProjectID)
+		if err == nil {
+			projID = pid
+		}
+	}
+
+	jobType := body.Type
+	if jobType == "" {
+		jobType = "FullSuite"
+	}
+
 	job := models.Job{
-		Type:      "FullSuite", // Default for now, can be dynamic
+		ProjectID: projID,
+		Type:      jobType,
 		Status:    models.StatusPending,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

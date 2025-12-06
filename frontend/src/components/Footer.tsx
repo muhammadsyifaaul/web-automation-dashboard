@@ -21,6 +21,7 @@ const Footer: React.FC = () => {
 
                 {/* Links Section */}
                 <div className="flex items-center gap-6">
+                    <span className="text-xs text-gray-500 hidden md:block">v2.0.0 (Multi-Project)</span>
                     <a
                         href="https://github.com/muhammadsyifaaul/web-automation-dashboard"
                         target="_blank"

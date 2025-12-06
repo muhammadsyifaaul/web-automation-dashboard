@@ -56,7 +56,7 @@ Automation **NEVER** runs on Render. It runs on your computer.
 1.  Make sure you have Python and Chrome installed.
 2.  Create/Update `automation/.env`:
     ```bash
-    BACKEND_URL=https://backend-xyz.onrender.com/api  # Your RENDER URL
+    BACKEND_URL=https://web-automation-dashboard-production.up.railway.app/api
     ```
 3.  Run the worker:
     ```bash

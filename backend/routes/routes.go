@@ -13,6 +13,12 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/results", handlers.GetResults)
 	api.Get("/stats", handlers.GetStats)
 
+	// Projects
+	api.Get("/projects", handlers.GetProjects)
+	api.Get("/projects/:id", handlers.GetProject)
+	api.Get("/projects/:id/results", handlers.GetProjectResults)
+	api.Post("/projects", handlers.CreateProject)
+
 	// Job Queue
 	api.Post("/queue-job", handlers.QueueJob)
 	api.Get("/jobs/next", handlers.GetNextJob)

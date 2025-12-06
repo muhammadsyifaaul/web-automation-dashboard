@@ -8,6 +8,7 @@ import (
 
 type Result struct {
 	ID               primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	ProjectID        primitive.ObjectID `json:"projectId" bson:"projectId"` // Link to Project
 	TestName         string             `json:"testName" bson:"testName"`
 	Status           string             `json:"status" bson:"status"` // PASS, FAIL
 	Message          string             `json:"message" bson:"message"`

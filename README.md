@@ -1,135 +1,66 @@
-# Web Automation Test Dashboard
+# Multi-Project Automation Dashboard (v2.0)
 
-A modular, production-ready QA Automation Dashboard with strict Local vs. Production safety, Dark Mode, CI/CD automation, and fully isolated Selenium execution that only runs on the user's local machine.
+A modular, production-ready QA Automation Platform. Manage multiple websites, queue tests in the cloud, and execute them safely on local machines.
 
----
+## 🚀 Key Features (v2.0)
+-   **Multi-Project Support**: Manage independent test suites for different websites.
+-   **Hybrid Architecture**:
+    -   **Backend/Frontend**: Deployed to Cloud (Render/GitHub Pages).
+    -   **Automation**: Runs **LOCALLY** (Secure, no headless servers needed).
+-   **Job Queue**: Backend queues jobs; Local Worker polls and executes them.
+-   **Dark Mode**: Sleek UI with persistence.
 
-# 🔰 GitHub Badges
+## 📂 Project Structure
+\`\`\`
+├── backend/            # Go Fiber (API & Job Queue)
+├── frontend/           # React + Vite (Project Hub & Dashboard)
+└── automation/         # Python Selenium (Polling Worker)
+    ├── local_runner.py # Smart Dispatcher
+    └── projects/       # Per-Project Test Scripts
+        └── demo_e_commerce/
+            └── tests.py
+\`\`\`
 
-[![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blue)]()
-[![Backend](https://img.shields.io/badge/Backend-Go%20Fiber-brightgreen)]()
-[![Database](https://img.shields.io/badge/Database-MongoDB%20Atlas-green)]()
-[![Automation](https://img.shields.io/badge/Automation-Python%20%2B%20Selenium-yellow)]()
-[![Status](https://img.shields.io/badge/Status-Development-orange)]()
-[![License](https://img.shields.io/badge/License-MIT-lightgrey)]()
+## 🛠️ Setup Instructions
 
----
+### 1. Backend (Go)
+\`\`\`bash
+cd backend
+# Create .env from example
+cp .env.example .env
+# Run
+go mod tidy
+go run main.go
+\`\`\`
 
-# 🚀 Overview
+### 2. Frontend (React)
+\`\`\`bash
+cd frontend
+npm install
+npm run dev
+\`\`\`
 
-This system is designed with a **safe hybrid architecture**:
+### 3. Automation (Python)
+\`\`\`bash
+cd automation
+# Setup Env
+cp .env.example .env
+# Install
+pip install -r requirements.txt
+# Run Worker
+python local_runner.py
+\`\`\`
 
-- **Backend + Frontend = Production**
-- **Automation Runner = Local Only**
+## 🧪 How to Add a New Project
+1.  **Dashboard**: click "New Project" and add details.
+2.  **Automation**: Create `automation/projects/<snake_case_name>/tests.py`.
+3.  **Script**: Define functions starting with `run_` (e.g., `run_checkout_flow(driver)`).
+4.  **Run**: Click "Run Test" on the dashboard. The worker will automatically pick the right script!
 
-This ensures:
-- No browser or Selenium execution ever occurs on public servers.
-- Local machines execute tests and report results securely.
-- Production remains lightweight, scalable, and server-safe.
+## 🌍 Deployment
+-   **Frontend**: Deployed via GitHub Actions to GitHub Pages.
+-   **Backend**: Deploy to Railway/Render.
+-   **Automation**: ALWAYS run on a local machine (or a secure worker node), NEVER on the web server.
 
----
-
-
-
-# ✨ Features
-
-- 🚫 **Production-Safe** — Selenium is forbidden in production.
-- 🌙 **Dark Mode** with localStorage persistence.
-- 📊 **Visual Reporting** — history, charts, failure screenshots.
-- 🕒 **Daily Scheduler** — backend auto-creates jobs.
-- 🔄 **Local Runner** — polls backend every 10s.
-- 🧱 **Job Queue System** — clean separation between creation & execution.
-- 📦 **MongoDB Atlas** — cloud database with no Docker requirement.
-- ⚙ CI/CD — GitHub Pages deployment for frontend.
-
----
-
-# 🛠️ Setup Instructions
-
- 1. Backend (Go)
-    cd backend
-    
-    cp .env.example .env
-    
-    go mod tidy
-    
-    go run main.go
-
-
-3. Frontend (React + Vite)
-
-   cd frontend
-   
-   npm install
-   
-   npm run dev
-
-
-3. Automation (Python + Selenium)
-
-   cd automation
-   
-   cp .env.example .env
-   
-   pip install -r requirements.txt
-   
-   python local_runner.py
-
-
-🌍 Deployment
-Frontend (GitHub Pages)
-Push to main → GitHub Pages auto-deploys with CI/CD workflow.
-
-Backend (Render or Railway)
-Set environment variables:
-
-APP_ENV=production
-ENABLE_LOCAL_RUN_TEST=false
-ALLOWED_ORIGIN=https://your-username.github.io/your-frontend
-MONGO_URI=your-atlas-uri
-⚠ Production can queue jobs, but cannot run Selenium.
-
-Local Development Mode
-
-ENABLE_LOCAL_RUN_TEST=true
-APP_ENV=local
-🔧 Environment Variables
-Backend
-MONGO_URI
-
-APP_ENV
-
-ENABLE_LOCAL_RUN_TEST
-
-ALLOWED_ORIGIN
-
-Frontend
-VITE_ENV=local|production
-
-VITE_API_URL_PROD
-
-Automation
-BACKEND_API_URL
-
-LOCAL_RUNNER_KEY (optional)
-
-🏗️ Project Status & Roadmap
-The project is currently under active development.
-
-🚧 Next Milestones:
-Multi-project support
-
-Multiple test cases per project
-
-Dashboard Project List
-
-Run automation per project
-
-Parallel reporting
-
-Advanced analytics charts
-
-
-⭐ Contribute
-Pull requests and issues are welcome.
-Help improve this automation dashboard and expand the architecture!
+## 📜 License
+MIT

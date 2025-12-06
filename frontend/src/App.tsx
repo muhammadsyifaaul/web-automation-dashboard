@@ -1,8 +1,8 @@
 import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
-import Results from './pages/Results';
+import Projects from './pages/Projects';
+import ProjectDetail from './pages/ProjectDetail';
 import Settings from './pages/Settings';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -12,8 +12,8 @@ const App: React.FC = () => {
             <HashRouter>
                 <Layout>
                     <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/results" element={<Results />} />
+                        <Route path="/" element={<Projects />} />
+                        <Route path="/project/:id" element={<ProjectDetail />} />
                         <Route path="/settings" element={<Settings />} />
                     </Routes>
                 </Layout>

@@ -17,7 +17,8 @@ const (
 
 type Job struct {
 	ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Type      string             `json:"type" bson:"type"` // e.g., "FullSuite", "LoginTest"
+	ProjectID primitive.ObjectID `json:"projectId" bson:"projectId"` // Link to Project
+	Type      string             `json:"type" bson:"type"`           // e.g., "FullSuite", "LoginTest"
 	Status    JobStatus          `json:"status" bson:"status"`
 	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt time.Time          `json:"updatedAt" bson:"updatedAt"`

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { TestResult, Stats } from '../types';
+import { TestResult, Stats, Project } from '../types';
 
 // Environment Logic
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -24,9 +24,12 @@ export const getStats = async () => {
     return response.data.data;
 };
 
-export const runTest = async () => {
+export const runTest = async (projectId?: string) => {
     try {
-        const response = await api.post('/run-test');
+        const response = await api.post('/queue-job', {
+            projectId: projectId,
+            type: 'FullSuite'
+        });
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.status === 403) {
@@ -34,6 +37,27 @@ export const runTest = async () => {
         }
         throw error;
     }
+};
+
+// Project APIs
+export const getProjects = async () => {
+    const response = await api.get<{ success: boolean; data: Project[] }>('/projects');
+    return response.data.data;
+};
+
+export const getProject = async (id: string) => {
+    const response = await api.get<{ success: boolean; data: Project }>('/projects/' + id);
+    return response.data.data;
+};
+
+export const createProject = async (name: string, baseUrl: string) => {
+    const response = await api.post<{ success: boolean; data: Project }>('/projects', { name, baseUrl });
+    return response.data.data;
+};
+
+export const getProjectResults = async (id: string) => {
+    const response = await api.get<{ success: boolean; data: TestResult[] }>('/projects/' + id + '/results');
+    return response.data.data;
 };
 
 export const isLocalEnv = () => ENV === 'development';

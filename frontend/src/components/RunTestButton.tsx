@@ -1,18 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { runTest } from '../services/api';
 
 interface Props {
-    loading?: boolean;
-    onClick?: () => void;
+    projectId?: string;
+    onRunComplete?: () => void;
 }
 
-const RunTestButton: React.FC<Props> = ({ loading = false, onClick }) => {
+const RunTestButton: React.FC<Props> = ({ projectId, onRunComplete }) => {
+    const [loading, setLoading] = useState(false);
+
+    const handleRun = async () => {
+        setLoading(true);
+        try {
+            await runTest(projectId);
+            if (onRunComplete) onRunComplete();
+            alert('Test Queued Successfully! 🚀');
+        } catch (error: any) {
+            alert(error.message || 'Failed to queue test');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <button
-            onClick={onClick}
+            onClick={handleRun}
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow disabled:opacity-50 transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow disabled:opacity-50 transition-colors flex items-center gap-2"
         >
-            {loading ? 'Running...' : 'Run Test (Local)'}
+            {loading ? 'Queueing...' : 'Run Test Suite'}
         </button>
     );
 };

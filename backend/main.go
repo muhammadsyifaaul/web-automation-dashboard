@@ -24,6 +24,7 @@ func main() {
 
 	// 2. Connect Database
 	database.Connect()
+	database.Seed()
 
 	// 2.1 Start Scheduler
 	scheduler.StartCron()
