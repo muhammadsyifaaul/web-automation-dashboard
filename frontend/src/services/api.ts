@@ -2,11 +2,10 @@ import axios from 'axios';
 import { TestResult, Stats } from '../types';
 
 // Environment Logic
-const ENV = import.meta.env.VITE_ENV || 'local';
-const LOCAL_API = import.meta.env.VITE_API_URL_LOCAL || 'http://localhost:3000/api';
-const PROD_API = import.meta.env.VITE_API_URL_PROD || 'https://your-deployed-backend.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const ENV = import.meta.env.VITE_ENV || 'development';
 
-const BASE_URL = ENV === 'local' ? LOCAL_API : PROD_API;
+const BASE_URL = API_URL;
 
 const api = axios.create({
     baseURL: BASE_URL,
@@ -37,4 +36,4 @@ export const runTest = async () => {
     }
 };
 
-export const isLocalEnv = () => ENV === 'local';
+export const isLocalEnv = () => ENV === 'development';
