@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
                     <span className="text-xl">⚠️</span>
                     <div>
                         <p className="text-xs font-bold text-yellow-800 dark:text-yellow-200 uppercase tracking-wide">
-                            Automation tests cannot run in production
+                            For Now Automation tests cannot run in production
                         </p>
                         <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
                             Selenium tests only execute when the developer's local machine is running the automation worker.
@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
                         className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors text-sm font-medium"
                     >
                         <FaGithub className="text-xl" />
-                        <span>Source Code</span>
+                        <span>Visit The Repository</span>
                     </a>
                 </div>
             </div>
