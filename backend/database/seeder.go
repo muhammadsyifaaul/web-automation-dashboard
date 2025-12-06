@@ -12,28 +12,34 @@ import (
 )
 
 func Seed() {
-	// Check if any projects exist
-	var project models.Project
-	err := Collection.Database().Collection("projects").FindOne(context.Background(), bson.M{}).Decode(&project)
-	if err == nil {
-		// Projects exist, skip seeding
-		return
+	projects := []models.Project{
+		{
+			Name:    "Practice Test Login",
+			BaseURL: "https://practicetestautomation.com/practice-test-login/",
+		},
+		{
+			Name:    "The-Internet Login",
+			BaseURL: "https://the-internet.herokuapp.com/login",
+		},
 	}
 
-	// Create Default Project
-	log.Println("Seeding database with default project...")
-	defaultProject := models.Project{
-		ID:        primitive.NewObjectID(),
-		Name:      "Demo E-Commerce",
-		BaseURL:   "https://www.saucedemo.com",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
+	for _, p := range projects {
+		var existing models.Project
+		err := Collection.Database().Collection("projects").FindOne(context.Background(), bson.M{"name": p.Name}).Decode(&existing)
+		if err == nil {
+			log.Printf("Project '%s' already exists\n", p.Name)
+			continue
+		}
 
-	_, err = Collection.Database().Collection("projects").InsertOne(context.Background(), defaultProject)
-	if err != nil {
-		log.Println("Failed to seed default project:", err)
-	} else {
-		log.Println("Default project created successfully")
+		p.ID = primitive.NewObjectID()
+		p.CreatedAt = time.Now()
+		p.UpdatedAt = time.Now()
+
+		_, err = Collection.Database().Collection("projects").InsertOne(context.Background(), p)
+		if err != nil {
+			log.Printf("Failed to seed project '%s': %v\n", p.Name, err)
+		} else {
+			log.Printf("Seeded project: %s\n", p.Name)
+		}
 	}
 }
