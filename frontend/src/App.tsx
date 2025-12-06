@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Results from './pages/Results';
@@ -9,7 +9,7 @@ import { ThemeProvider } from './context/ThemeContext';
 const App: React.FC = () => {
     return (
         <ThemeProvider>
-            <BrowserRouter>
+            <HashRouter>
                 <Layout>
                     <Routes>
                         <Route path="/" element={<Dashboard />} />
@@ -17,7 +17,7 @@ const App: React.FC = () => {
                         <Route path="/settings" element={<Settings />} />
                     </Routes>
                 </Layout>
-            </BrowserRouter>
+            </HashRouter>
         </ThemeProvider>
     );
 };
