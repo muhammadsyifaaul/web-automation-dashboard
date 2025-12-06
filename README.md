@@ -1,61 +1,135 @@
 # Web Automation Test Dashboard
 
-A modular, production-ready QA Automation Dashboard with strict Local vs. Production safety, Dark Mode, and CI/CD.
+A modular, production-ready QA Automation Dashboard with strict Local vs. Production safety, Dark Mode, CI/CD automation, and fully isolated Selenium execution that only runs on the user's local machine.
 
-## Architecture
+---
 
-- **Frontend**: React + TypeScript + Vite (Deployed on GitHub Pages)
-- **Backend**: Go + Fiber (Deployed on Render/Railway)
-- **Database**: MongoDB Atlas
-- **Automation**: Python + Selenium (Runs LOCALLY only)
+# 🔰 GitHub Badges
 
-## Features
+[![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blue)]()
+[![Backend](https://img.shields.io/badge/Backend-Go%20Fiber-brightgreen)]()
+[![Database](https://img.shields.io/badge/Database-MongoDB%20Atlas-green)]()
+[![Automation](https://img.shields.io/badge/Automation-Python%20%2B%20Selenium-yellow)]()
+[![Status](https://img.shields.io/badge/Status-Development-orange)]()
+[![License](https://img.shields.io/badge/License-MIT-lightgrey)]()
 
-- **Environment Safety**: Automation execution is strictly blocked in production environments.
-- **Dark Mode**: Fully supported with persistence.
-- **Visual Reporting**: Charts, stats, and screenshot viewer for failures.
-- **CI/CD**: Automated workflows for building and deploying.
+---
 
-## Setup Instructions
+# 🚀 Overview
 
-### 1. Backend (Go)
+This system is designed with a **safe hybrid architecture**:
 
-```bash
-cd backend
-cp .env.example .env
-# Edit .env with your MongoDB URI
-go mod tidy
-go run main.go
-```
+- **Backend + Frontend = Production**
+- **Automation Runner = Local Only**
 
-### 2. Frontend (React)
+This ensures:
+- No browser or Selenium execution ever occurs on public servers.
+- Local machines execute tests and report results securely.
+- Production remains lightweight, scalable, and server-safe.
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+---
 
-### 3. Automation (Python)
 
-```bash
-cd automation
-cp .env.example .env
-pip install -r requirements.txt
-python local_runner.py
-```
 
-## Deployment
+# ✨ Features
 
-- **Frontend**: Push to `main` branch to trigger GitHub Pages deployment (ensure Workflow permissions are enabled).
-- **Backend**: Connect your repo to Render/Railway. Set `ENABLE_LOCAL_RUN_TEST=false` in production env vars.
+- 🚫 **Production-Safe** — Selenium is forbidden in production.
+- 🌙 **Dark Mode** with localStorage persistence.
+- 📊 **Visual Reporting** — history, charts, failure screenshots.
+- 🕒 **Daily Scheduler** — backend auto-creates jobs.
+- 🔄 **Local Runner** — polls backend every 10s.
+- 🧱 **Job Queue System** — clean separation between creation & execution.
+- 📦 **MongoDB Atlas** — cloud database with no Docker requirement.
+- ⚙ CI/CD — GitHub Pages deployment for frontend.
 
-## Environment Variables
+---
 
-### Backend
-- `ENABLE_LOCAL_RUN_TEST`: Set to `true` for local dev, `false` for production.
-- `ALLOWED_ORIGIN`: Set to your frontend URL in production.
+# 🛠️ Setup Instructions
 
-### Frontend
-- `VITE_ENV`: `local` or `production`.
-- `VITE_API_URL_PROD`: Your production backend URL.
+ 1. Backend (Go)
+    cd backend
+    
+    cp .env.example .env
+    
+    go mod tidy
+    
+    go run main.go
+
+
+3. Frontend (React + Vite)
+
+   cd frontend
+   
+   npm install
+   
+   npm run dev
+
+
+3. Automation (Python + Selenium)
+
+   cd automation
+   
+   cp .env.example .env
+   
+   pip install -r requirements.txt
+   
+   python local_runner.py
+
+
+🌍 Deployment
+Frontend (GitHub Pages)
+Push to main → GitHub Pages auto-deploys with CI/CD workflow.
+
+Backend (Render or Railway)
+Set environment variables:
+
+APP_ENV=production
+ENABLE_LOCAL_RUN_TEST=false
+ALLOWED_ORIGIN=https://your-username.github.io/your-frontend
+MONGO_URI=your-atlas-uri
+⚠ Production can queue jobs, but cannot run Selenium.
+
+Local Development Mode
+
+ENABLE_LOCAL_RUN_TEST=true
+APP_ENV=local
+🔧 Environment Variables
+Backend
+MONGO_URI
+
+APP_ENV
+
+ENABLE_LOCAL_RUN_TEST
+
+ALLOWED_ORIGIN
+
+Frontend
+VITE_ENV=local|production
+
+VITE_API_URL_PROD
+
+Automation
+BACKEND_API_URL
+
+LOCAL_RUNNER_KEY (optional)
+
+🏗️ Project Status & Roadmap
+The project is currently under active development.
+
+🚧 Next Milestones:
+Multi-project support
+
+Multiple test cases per project
+
+Dashboard Project List
+
+Run automation per project
+
+Parallel reporting
+
+Advanced analytics charts
+
+
+⭐ Contribute
+Pull requests and issues are welcome.
+Help improve this automation dashboard and expand the architecture!
