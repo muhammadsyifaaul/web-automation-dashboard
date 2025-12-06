@@ -177,6 +177,12 @@ def main():
 
     while True:
         try:
+            # Send Heartbeat
+            try:
+                requests.post(f"{BACKEND_URL}/worker-heartbeat")
+            except:
+                pass
+
             job = get_next_job()
             if job:
                 run_job(job)
