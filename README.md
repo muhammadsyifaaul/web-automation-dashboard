@@ -46,7 +46,7 @@ This ensures:
 
 # 🛠️ Setup Instructions
 
-## 1. Backend (Go)
+ 1. Backend (Go)
 cd backend
 cp .env.example .env
 go mod tidy
@@ -64,6 +64,7 @@ cd automation
 cp .env.example .env
 pip install -r requirements.txt
 python local_runner.py
+
 🌍 Deployment
 Frontend (GitHub Pages)
 Push to main → GitHub Pages auto-deploys with CI/CD workflow.
