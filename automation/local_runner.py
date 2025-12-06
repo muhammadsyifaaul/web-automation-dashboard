@@ -180,7 +180,7 @@ def main():
             if job:
                 run_job(job)
             else:
-                pass
+                print(f"[{time.strftime('%H:%M:%S')}] No pending jobs. Waiting...", end='\r')
         except Exception as e:
             print(f"Main loop error: {e}")
             traceback.print_exc()

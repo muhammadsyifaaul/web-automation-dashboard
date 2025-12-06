@@ -51,7 +51,7 @@ func GetProjectResults(c *fiber.Ctx) error {
 		return utils.SendError(c, fiber.StatusBadRequest, "Invalid Project ID")
 	}
 
-	var results []models.Result
+	var results = []models.Result{} // Initialize empty slice
 	// Find results where projectId == id
 	cursor, err := database.Collection.Database().Collection("results").Find(context.Background(), bson.M{"projectId": objID})
 	if err != nil {
