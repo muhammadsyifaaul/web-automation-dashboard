@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
                 {/* Links Section */}
                 <div className="flex items-center gap-6">
                     <a
-                        href="https://github.com/syifaaul/web-automation-dashboard"
+                        href="https://github.com/muhammadsyifaaul/web-automation-dashboard"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors text-sm font-medium"
