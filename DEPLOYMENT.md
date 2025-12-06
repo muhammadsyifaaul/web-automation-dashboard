@@ -14,43 +14,39 @@ Follow these steps to deploy your **Web Automation Dashboard** to production.
 
 ---
 
-## 2. Backend Deployment (Render.com)
+## 2. Backend Deployment (Railway)
 1.  Push your code to GitHub.
-2.  Go to [Render Dashboard](https://dashboard.render.com).
-3.  Click **New +** > **Web Service**.
-4.  Connect your GitHub repository.
+2.  Go to [Railway Dashboard](https://railway.app).
+3.  Click **New Project** > **Deploy from GitHub repo**.
+4.  Select your repository.
 5.  **Configuration**:
+    *   Click on the new service card > **Settings**.
     *   **Root Directory**: `backend` (Important!)
-    *   **Runtime**: Go
     *   **Build Command**: `go build -o server`
     *   **Start Command**: `./server`
-6.  **Environment Variables**:
-    *   `PORT`: `10000` (Render default)
+6.  **Variables** (Environment):
+    *   `PORT`: `3000` (Railway will expose this)
     *   `APP_ENV`: `production`
     *   `MONGO_URI`: (Paste your Atlas URI here)
     *   `ALLOWED_ORIGIN`: `https://<your-username>.github.io` (Your future frontend URL)
     *   `ENABLE_LOCAL_RUN_TEST`: `false`
-7.  Click **Deploy**.
-8.  **Copy the Backend URL** (e.g., `https://backend-xyz.onrender.com`).
+7.  **Generate Domain**:
+    *   Go to **Settings** > **Networking**.
+    *   Click **Generate Domain**.
+    *   Copy the URL (e.g., `web-automation-dashboard-production.up.railway.app`).
 
 ---
 
 ## 3. Frontend Deployment (GitHub Pages)
 1.  Wait for the Backend to deploy.
-2.  Update the **Production Environment Variable** locally:
-    *   Create `frontend/.env.production` (if not exists) or just ensure the build knows the URL.
-    *   Wait, the best way is to set it in the Repository Secrets!
-3.  **Go to GitHub Repo Settings** > **Secrets and variables** > **Actions**.
-4.  Add New Repository Secret:
-    *   Name: `VITE_API_URL`
-    *   Value: (Your Render Backend URL, e.g., `https://backend-xyz.onrender.com/api`)
-5.  **Trigger Deployment**:
-    *   Make a small change or re-run the "Frontend CI/CD" Action content in `.github/workflows/frontend.yml`.
-    *   Wait for the action to finish.
-6.  **Verify**:
-    *   Go to GitHub Repo **Settings** > **Pages**.
+2.  **Update Repository Secrets**:
+    *   Go to GitHub Repo **Settings** > **Secrets and variables** > **Actions**.
+    *   Add/Update Secret: `VITE_API_URL`
+    *   Value: (Your Railway Backend URL + `/api`, e.g., `https://web-automation-production.up.railway.app/api`)
+3.  **Trigger Deployment**:
+    *   Re-run the "Frontend CI/CD" Action.
+4.  **Verify**:
     *   Your site should be live at `https://<username>.github.io/<repo-name>/`.
-    *   Check that "All Results" loads (it connects to backend).
 
 ---
 
