@@ -51,12 +51,14 @@ cd backend
 cp .env.example .env
 go mod tidy
 go run main.go
+
 2. Frontend (React + Vite)
 bash
 Copy code
 cd frontend
 npm install
 npm run dev
+
 3. Automation (Python + Selenium)
 bash
 Copy code
@@ -71,8 +73,6 @@ Push to main → GitHub Pages auto-deploys with CI/CD workflow.
 Backend (Render or Railway)
 Set environment variables:
 
-ini
-Copy code
 APP_ENV=production
 ENABLE_LOCAL_RUN_TEST=false
 ALLOWED_ORIGIN=https://your-username.github.io/your-frontend
@@ -80,8 +80,7 @@ MONGO_URI=your-atlas-uri
 ⚠ Production can queue jobs, but cannot run Selenium.
 
 Local Development Mode
-ini
-Copy code
+
 ENABLE_LOCAL_RUN_TEST=true
 APP_ENV=local
 🔧 Environment Variables
