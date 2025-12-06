@@ -15,6 +15,7 @@ export interface TestResult {
     duration: number;
     timestamp: string;
     screenshotBase64?: string;
+    errorStack?: string;
     browser: string;
     environment: string;
 }

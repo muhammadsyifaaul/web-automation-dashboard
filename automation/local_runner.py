@@ -168,6 +168,7 @@ def run_job(job):
     final_status = "Completed" if all_passed else "Failed"
     update_job_status(job['id'], final_status)
     print(f"Job Finished: {final_status}")
+    cleanup_driver()
 
 def main():
     print(f"Starting Multi-Project Automation Worker.")
