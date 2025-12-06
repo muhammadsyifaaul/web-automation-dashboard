@@ -53,15 +53,13 @@ go mod tidy
 go run main.go
 
 2. Frontend (React + Vite)
-bash
-Copy code
+
 cd frontend
 npm install
 npm run dev
 
 3. Automation (Python + Selenium)
-bash
-Copy code
+
 cd automation
 cp .env.example .env
 pip install -r requirements.txt
