@@ -1,0 +1,36 @@
+# Environments
+.env
+.env.local
+.env.development
+.env.production
+*.env
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# Builds
+dist/
+build/
+bin/
+
+# Artifacts
+screenshots/
+uploads/
+logs/
+tmp/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Drivers
+chromedriver.exe
+geckodriver.exe
+drivers/
+
+# IDE
+.vscode/
+.idea/

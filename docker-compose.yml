@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: automation_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+        # No auth for local dev for simplicity, or user can set one.
+        # But the .env I'm writing will match this.
+      - MONGO_INITDB_DATABASE=automation_dashboard
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
