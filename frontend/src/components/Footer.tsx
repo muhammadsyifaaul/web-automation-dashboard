@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaGithub } from 'react-icons/fa';
+import WorkerStatus from './WorkerStatus';
 
 const Footer: React.FC = () => {
     return (
@@ -21,6 +22,7 @@ const Footer: React.FC = () => {
 
                 {/* Links Section */}
                 <div className="flex items-center gap-6">
+                    <WorkerStatus />
                     <span className="text-xs text-gray-500 hidden md:block">v2.0.0 (Multi-Project)</span>
                     <a
                         href="https://github.com/muhammadsyifaaul/web-automation-dashboard"

@@ -60,4 +60,9 @@ export const getProjectResults = async (id: string) => {
     return response.data.data;
 };
 
+export const getWorkerStatus = async () => {
+    const response = await api.get<{ online: boolean; lastSeen: string }>('/worker-status');
+    return response.data;
+};
+
 export const isLocalEnv = () => ENV === 'development';

@@ -24,6 +24,10 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/jobs/next", handlers.GetNextJob)
 	api.Post("/jobs/update-status", handlers.UpdateJobStatus)
 
+	// Worker Heartbeat
+	api.Post("/worker-heartbeat", handlers.RecordHeartbeat)
+	api.Get("/worker-status", handlers.GetWorkerStatus)
+
 	// Legacy endpoint (now queues job)
 	api.Post("/run-test", handlers.QueueJob)
 }
