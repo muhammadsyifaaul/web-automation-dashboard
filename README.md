@@ -47,33 +47,33 @@ This ensures:
 # 🛠️ Setup Instructions
 
  1. Backend (Go)
-cd backend
-
-cp .env.example .env
-
-go mod tidy
-
-go run main.go
+    cd backend
+    
+    cp .env.example .env
+    
+    go mod tidy
+    
+    go run main.go
 
 
 3. Frontend (React + Vite)
 
-cd frontend
-
-npm install
-
-npm run dev
+   cd frontend
+   
+   npm install
+   
+   npm run dev
 
 
 3. Automation (Python + Selenium)
 
-cd automation
-
-cp .env.example .env
-
-pip install -r requirements.txt
-
-python local_runner.py
+   cd automation
+   
+   cp .env.example .env
+   
+   pip install -r requirements.txt
+   
+   python local_runner.py
 
 
 🌍 Deployment
