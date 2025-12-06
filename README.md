@@ -48,22 +48,33 @@ This ensures:
 
  1. Backend (Go)
 cd backend
+
 cp .env.example .env
+
 go mod tidy
+
 go run main.go
 
-2. Frontend (React + Vite)
+
+3. Frontend (React + Vite)
 
 cd frontend
+
 npm install
+
 npm run dev
+
 
 3. Automation (Python + Selenium)
 
 cd automation
+
 cp .env.example .env
+
 pip install -r requirements.txt
+
 python local_runner.py
+
 
 🌍 Deployment
 Frontend (GitHub Pages)
