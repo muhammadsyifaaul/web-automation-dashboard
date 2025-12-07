@@ -62,5 +62,17 @@ python local_runner.py
 -   **Backend**: Deploy to Railway/Render.
 -   **Automation**: ALWAYS run on a local machine (or a secure worker node), NEVER on the web server.
 
+## ⚠️ Important Notice
+
+-   Automation tests cannot run in production(For Now).
+
+-   The backend only queues jobs.
+
+-   Actual test execution requires the developer’s local machine.
+
+## 📌 Development Roadmap (Next Version)
+1.  **Automation running in production**
+2.  **Daily scheduled test**
+
 ## 📜 License
 MIT
