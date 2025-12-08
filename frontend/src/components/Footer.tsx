@@ -35,6 +35,13 @@ const Footer: React.FC = () => {
                     </a>
                 </div>
             </div>
+
+            {/* Under Development Badge */}
+            <div className="text-center mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+                <span className="text-xs font-mono bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2 py-1 rounded">
+                    🚧 Under Development 🚧
+                </span>
+            </div>
         </footer>
     );
 };

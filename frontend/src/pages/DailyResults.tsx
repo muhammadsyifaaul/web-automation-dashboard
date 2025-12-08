@@ -39,7 +39,12 @@ const DailyResults: React.FC = () => {
         setExpandedProjects(newSet);
     };
 
-    if (loading) return <div className="p-10 text-center">Loading Daily Results...</div>;
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+            <div className="text-xl font-bold text-blue-500 text-glow animate-pulse">Loading Daily Results...</div>
+        </div>
+    );
 
     return (
         <div className="space-y-6">
@@ -100,8 +105,8 @@ const DailyResults: React.FC = () => {
                                                     </div>
                                                 </div>
                                                 <span className={`text-xs px-2 py-1 rounded font-bold ${result.status === 'PASS'
-                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200'
-                                                        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200'
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200'
+                                                    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200'
                                                     }`}>
                                                     {result.status}
                                                 </span>
