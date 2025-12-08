@@ -110,10 +110,14 @@ def run_job(job):
     module = load_project_module(project_slug)
     if not module:
         print(f"Could not load test module for {project_slug}. Please create 'automation/projects/{project_slug}/tests.py'.")
-        # Try default fallback for demo purposes if it's the demo project
+        
+        # Fallbacks
         if "demo" in project_slug:
             print("Trying fallback to 'demo_e_commerce'...")
             module = load_project_module("demo_e_commerce")
+        elif "ams4u" in project_slug:
+             print("Trying fallback to 'ams4u_cms_auto'...")
+             module = load_project_module("ams4u_cms_auto")
 
     if not module:
         update_job_status(job['id'], "Failed")
