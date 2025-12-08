@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { runTest } from '../services/api';
+import { runTest, getWorkerStatus } from '../services/api';
 
 interface Props {
     projectId?: string;
@@ -14,6 +14,14 @@ const RunTestButton: React.FC<Props> = ({ projectId, onRunComplete }) => {
         setLoading(true);
         setNotification(null);
         try {
+            const status = await getWorkerStatus();
+            if (!status.online) {
+                setNotification({ type: 'error', text: 'No Worker Online!' });
+                setTimeout(() => setNotification(null), 3000);
+                setLoading(false);
+                return;
+            }
+
             await runTest(projectId);
             setNotification({ type: 'success', text: 'Test Queued! 🚀' });
             if (onRunComplete) onRunComplete();

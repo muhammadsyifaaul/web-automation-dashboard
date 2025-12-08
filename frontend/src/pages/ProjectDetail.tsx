@@ -138,9 +138,9 @@ const ProjectDetail: React.FC = () => {
                             )}
 
                             {selectedResult.errorStack && (
-                                <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg overflow-x-auto">
+                                <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg overflow-x-auto max-h-64 overflow-y-auto">
                                     <h3 className="text-sm font-semibold text-red-500 uppercase mb-2">Error Stack</h3>
-                                    <pre className="text-xs text-red-700 dark:text-red-300 font-mono">{selectedResult.errorStack}</pre>
+                                    <pre className="text-xs text-red-700 dark:text-red-300 font-mono whitespace-pre-wrap word-break">{selectedResult.errorStack}</pre>
                                 </div>
                             )}
 

@@ -61,7 +61,7 @@ const DailyResults: React.FC = () => {
 
                         {/* Header */}
                         <div
-                            className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                            className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             onClick={() => toggleExpand(project.id)}
                         >
                             <div className="flex items-center gap-4">
@@ -91,7 +91,7 @@ const DailyResults: React.FC = () => {
                                 ) : (
                                     <div className="divide-y divide-gray-100 dark:divide-gray-700">
                                         {projectResults.map((result) => (
-                                            <div key={result.id} className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-750">
+                                            <div key={result.id} className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                                 <div className="flex items-center gap-3">
                                                     {result.status === 'PASS'
                                                         ? <FaCheckCircle className="text-green-500" />
