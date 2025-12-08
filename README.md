@@ -66,4 +66,4 @@ python local_runner.py
 2.  **Daily scheduled test**
 
 ## 📜 License
-MIT
+AGPL-3.0 license
