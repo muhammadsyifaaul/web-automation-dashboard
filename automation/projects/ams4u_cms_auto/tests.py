@@ -27,11 +27,11 @@ def run_login_test(driver):
         driver.get("https://cms-ams4u-development-new.qbit.co.id/login")
         
         # 2. Input Credentials
-        driver.find_element(By.ID, "basic_email").send_keys("muhammadsyifaaulj@gmail.com")
-        driver.find_element(By.ID, "basic_password").send_keys("Secret*123")
+        driver.find_element(By.ID, "basic_email").send_keys("dummykeys")
+        driver.find_element(By.ID, "basic_password").send_keys("dummykeys")
         
         # 3. Click Login
-        driver.find_element(By.ID, "submit").click()
+        driver.find_element(By.XPATH, "//button[@type='submit']").click()
         
         # 4. Verify Success
         time.sleep(2) # Wait for load
