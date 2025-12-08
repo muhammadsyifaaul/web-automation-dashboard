@@ -20,7 +20,7 @@ const DailyStatsChart: React.FC = () => {
     }, []);
 
     const total = stats.pass + stats.fail;
-    if (total === 0) return null;
+    // if (total === 0) return null; // Show even if empty
 
     const passWidth = (stats.pass / total) * 100;
     const failWidth = (stats.fail / total) * 100;

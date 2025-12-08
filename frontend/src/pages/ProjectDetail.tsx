@@ -22,7 +22,9 @@ const ProjectDetail: React.FC = () => {
                 getProjectResults(id)
             ]);
             setProject(projData);
-            setResults(resData);
+            // Sort results descending
+            const sortedResults = resData.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+            setResults(sortedResults);
         } catch (error) {
             console.error('Failed to load project data', error);
         } finally {
@@ -99,14 +101,15 @@ const ProjectDetail: React.FC = () => {
             </div>
             {/* Detail Modal */}
             {selectedResult && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-4xl shadow-2xl my-8">
-                        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center sticky top-0 bg-white dark:bg-gray-800 rounded-t-xl z-10">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[90vh]">
+                        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800 rounded-t-xl z-10 shrink-0">
                             <h2 className="text-2xl font-bold dark:text-white">Test Details</h2>
                             <button onClick={() => setSelectedResult(null)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl">&times;</button>
                         </div>
-                        <div className="p-6 space-y-6">
+                        <div className="p-6 space-y-6 overflow-y-auto">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* ... fields ... */}
                                 <div>
                                     <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Status</h3>
                                     <span className={`px-3 py-1 rounded-full text-sm font-bold ${selectedResult.status === 'PASS'
@@ -140,7 +143,7 @@ const ProjectDetail: React.FC = () => {
                             {selectedResult.errorStack && (
                                 <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg overflow-x-auto max-h-64 overflow-y-auto">
                                     <h3 className="text-sm font-semibold text-red-500 uppercase mb-2">Error Stack</h3>
-                                    <pre className="text-xs text-red-700 dark:text-red-300 font-mono whitespace-pre-wrap word-break">{selectedResult.errorStack}</pre>
+                                    <pre className="text-xs text-red-700 dark:text-red-300 font-mono whitespace-pre-wrap word-break break-words text-wrap">{selectedResult.errorStack}</pre>
                                 </div>
                             )}
 
@@ -157,7 +160,7 @@ const ProjectDetail: React.FC = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                        <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end shrink-0 bg-white dark:bg-gray-800 rounded-b-xl">
                             <button
                                 onClick={() => setSelectedResult(null)}
                                 className="px-6 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white rounded-lg transition-colors"
