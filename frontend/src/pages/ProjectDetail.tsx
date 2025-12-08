@@ -36,7 +36,12 @@ const ProjectDetail: React.FC = () => {
         return () => clearInterval(interval);
     }, [id]);
 
-    if (loading) return <div className="p-10 text-center">Loading Dashboard...</div>;
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+            <div className="text-xl font-bold text-blue-500 text-glow animate-pulse">Loading Dashboard...</div>
+        </div>
+    );
     if (!project) return <div className="p-10 text-center text-red-500">Project Not Found</div>;
 
     // Calculate stats on the fly

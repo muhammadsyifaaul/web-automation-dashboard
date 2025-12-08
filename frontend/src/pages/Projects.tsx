@@ -40,7 +40,12 @@ const Projects: React.FC = () => {
         }
     };
 
-    if (loading) return <div className="text-center p-10">Loading Projects...</div>;
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+            <div className="text-xl font-bold text-blue-500 text-glow animate-pulse">Loading Projects...</div>
+        </div>
+    );
 
     return (
         <div className="p-6">
