@@ -54,9 +54,15 @@ func GetDailyResults(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Get start of today (local or UTC, usually server time)
-	now := time.Now()
-	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	// Get start of today in Indonesia (Asia/Jakarta)
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		// Fallback to UTC+7 if tzdata is not available
+		loc = time.FixedZone("WIB", 7*60*60)
+	}
+
+	now := time.Now().In(loc)
+	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
 
 	// Find results where timestamp >= startOfDay
 	filter := bson.M{
