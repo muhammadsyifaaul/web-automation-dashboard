@@ -10,38 +10,29 @@ A modular, production-ready QA Automation Platform. Manage multiple websites, qu
 -   **Job Queue**: Backend queues jobs; Local Worker polls and executes them.
 -   **Dark Mode**: Sleek UI with persistence.
 
-## 📂 Project Structure
-\`\`\`
-├── backend/            # Go Fiber (API & Job Queue)
-├── frontend/           # React + Vite (Project Hub & Dashboard)
-└── automation/         # Python Selenium (Polling Worker)
-    ├── local_runner.py # Smart Dispatcher
-    └── projects/       # Per-Project Test Scripts
-        └── demo_e_commerce/
-            └── tests.py
-\`\`\`
+
 
 ## 🛠️ Setup Instructions
 
 ### 1. Backend (Go)
-\`\`\`bash
+
 cd backend
 # Create .env from example
 cp .env.example .env
 # Run
 go mod tidy
 go run main.go
-\`\`\`
+
 
 ### 2. Frontend (React)
-\`\`\`bash
+
 cd frontend
 npm install
 npm run dev
-\`\`\`
+
 
 ### 3. Automation (Python)
-\`\`\`bash
+
 cd automation
 # Setup Env
 cp .env.example .env
@@ -49,7 +40,7 @@ cp .env.example .env
 pip install -r requirements.txt
 # Run Worker
 python local_runner.py
-\`\`\`
+
 
 ## 🧪 How to Add a New Project
 1.  **Dashboard**: click "New Project" and add details.
