@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getProjects, createProject } from '../services/api';
 import { Project } from '../types';
+import DailyStatsChart from '../components/DailyStatsChart';
 import { FaPlus, FaExternalLinkAlt, FaRobot } from 'react-icons/fa';
 
 const Projects: React.FC = () => {
@@ -55,6 +56,8 @@ const Projects: React.FC = () => {
                     <FaPlus /> New Project
                 </button>
             </div>
+
+            <DailyStatsChart />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.map((project) => (

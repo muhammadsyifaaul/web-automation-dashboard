@@ -19,6 +19,11 @@ export const getResults = async () => {
     return response.data.data;
 };
 
+export const getDailyResults = async () => {
+    const response = await api.get<{ success: boolean; data: TestResult[] }>('/results/daily');
+    return response.data.data;
+};
+
 export const getStats = async () => {
     const response = await api.get<{ success: boolean; data: Stats }>('/stats');
     return response.data.data;

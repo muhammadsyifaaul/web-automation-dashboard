@@ -50,6 +50,40 @@ func GetResults(c *fiber.Ctx) error {
 	return utils.SendSuccess(c, results)
 }
 
+func GetDailyResults(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Get start of today (local or UTC, usually server time)
+	now := time.Now()
+	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+
+	// Find results where timestamp >= startOfDay
+	filter := bson.M{
+		"timestamp": bson.M{
+			"$gte": startOfDay,
+		},
+	}
+
+	opts := options.Find().SetSort(bson.D{{Key: "timestamp", Value: -1}})
+	cursor, err := database.Collection.Find(ctx, filter, opts)
+	if err != nil {
+		return utils.SendError(c, fiber.StatusInternalServerError, err.Error())
+	}
+
+	var results []models.Result
+	if err = cursor.All(ctx, &results); err != nil {
+		return utils.SendError(c, fiber.StatusInternalServerError, err.Error())
+	}
+
+	// Return empty array instead of null
+	if results == nil {
+		results = []models.Result{}
+	}
+
+	return utils.SendSuccess(c, results)
+}
+
 func RunTest(c *fiber.Ctx) error {
 	enableLocal := os.Getenv("ENABLE_LOCAL_RUN_TEST")
 	appEnv := os.Getenv("APP_ENV")

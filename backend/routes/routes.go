@@ -11,6 +11,7 @@ func SetupRoutes(app *fiber.App) {
 
 	api.Post("/save-result", handlers.SaveResult)
 	api.Get("/results", handlers.GetResults)
+	api.Get("/results/daily", handlers.GetDailyResults)
 	api.Get("/stats", handlers.GetStats)
 
 	// Projects
