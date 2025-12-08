@@ -26,7 +26,6 @@ const Footer: React.FC = () => {
                         🚧 Under Development 🚧
                     </span>
                     <WorkerStatus />
-                    <span className="text-xs text-gray-500 hidden md:block">v2.0.0 (Multi-Project)</span>
                     <a
                         href="https://github.com/muhammadsyifaaul/web-automation-dashboard"
                         target="_blank"
@@ -36,6 +35,7 @@ const Footer: React.FC = () => {
                         <FaGithub className="text-xl" />
                         <span>Visit The Repository</span>
                     </a>
+                    <span className="text-xs text-gray-500 hidden md:block">v2.0.0 (Multi-Project)</span>
                 </div>
             </div>
         </footer>
