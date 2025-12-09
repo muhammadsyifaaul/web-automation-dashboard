@@ -102,10 +102,47 @@ func GetProjectTests(c *fiber.Ctx) error {
 		return utils.SendError(c, fiber.StatusNotFound, "Project not found")
 	}
 
-	// 2. Resolve Slug
-	slug := strings.ToLower(project.Name)
-	slug = strings.ReplaceAll(slug, " ", "_")
-	slug = strings.ReplaceAll(slug, "-", "_")
+	// 2. Resolve Path
+	// Priority: 1. Explicit Directory 2. Name Slug 3. URL Slug
+	var potentialSlugs []string
+
+	if project.Directory != "" {
+		potentialSlugs = append(potentialSlugs, project.Directory)
+	}
+
+	// Name Slug
+	nameSlug := strings.ToLower(project.Name)
+	nameSlug = strings.ReplaceAll(nameSlug, " ", "_")
+	nameSlug = strings.ReplaceAll(nameSlug, "-", "_")
+	potentialSlugs = append(potentialSlugs, nameSlug)
+
+	// URL Slug (e.g., https://cms-ams4u... -> ams4u_cms_...)
+	// Simple heuristic: extract host, maybe first part of host
+	// This is fuzzy but requested by user ("match parent url")
+	if project.BaseURL != "" {
+		// remove protocol
+		urlClean := strings.TrimPrefix(project.BaseURL, "https://")
+		urlClean = strings.TrimPrefix(urlClean, "http://")
+		// remove trailing slash
+		urlClean = strings.TrimSuffix(urlClean, "/")
+
+		// If it's a subdomain like cms-ams4u-dev.qbit.co.id
+		// We might want to try "cms_ams4u_dev"
+		urlSlug := strings.ReplaceAll(urlClean, ".", "_")
+		urlSlug = strings.ReplaceAll(urlSlug, "-", "_")
+		potentialSlugs = append(potentialSlugs, urlSlug)
+
+		// Also try just the first part if it's a subdomain
+		parts := strings.Split(urlClean, ".")
+		if len(parts) > 0 {
+			potentialSlugs = append(potentialSlugs, strings.ReplaceAll(parts[0], "-", "_"))
+		}
+	}
+
+	// Fallback hardcoding (keep existing)
+	if strings.Contains(nameSlug, "ams4u") {
+		potentialSlugs = append(potentialSlugs, "ams4u_cms_auto")
+	}
 
 	// 3. Find File
 	cwd, _ := os.Getwd()
@@ -118,17 +155,21 @@ func GetProjectTests(c *fiber.Ctx) error {
 		rootPath = filepath.Dir(cwd)
 	}
 
-	// Check if folder exists, if not, try fallbacks
-	projectPath := filepath.Join(rootPath, "automation", "projects", slug)
-	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
-		if strings.Contains(slug, "ams4u") {
-			slug = "ams4u_cms_auto"
-		} else if strings.Contains(slug, "demo") {
-			slug = "demo_e_commerce"
+	var testPath string
+	found := false
+
+	for _, slug := range potentialSlugs {
+		path := filepath.Join(rootPath, "automation", "projects", slug, "tests.py")
+		if _, err := os.Stat(path); err == nil {
+			testPath = path
+			found = true
+			break
 		}
 	}
 
-	testPath := filepath.Join(rootPath, "automation", "projects", slug, "tests.py")
+	if !found {
+		return utils.SendError(c, fiber.StatusNotFound, "Test file not found. Checked: "+strings.Join(potentialSlugs, ", "))
+	}
 
 	content, err := os.ReadFile(testPath)
 	if err != nil {

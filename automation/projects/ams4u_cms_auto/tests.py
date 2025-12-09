@@ -24,7 +24,12 @@ def run_login_test(driver):
     
     try:
         # 1. Navigate
-        driver.get("https://cms-ams4u-development-new.qbit.co.id/login")
+        # 1. Navigate
+        target_url = os.getenv("TARGET_URL")
+        if not target_url:
+             target_url = "https://cms-ams4u-development-new.qbit.co.id" # Fallback
+        
+        driver.get(target_url + "/login")
         
         # 2. Input Credentials
         driver.find_element(By.ID, "basic_email").send_keys("dummykeys")

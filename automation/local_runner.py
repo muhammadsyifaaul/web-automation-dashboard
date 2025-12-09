@@ -104,7 +104,18 @@ def run_job(job):
         return
 
     project_slug = sanitize_project_name(project['name'])
+    
+    # Priority: Explicit Directory > Name Slug
+    if project.get('directory'):
+         project_slug = project['directory']
+    
     print(f"Project: {project['name']} -> Slug: {project_slug}")
+
+    # Inject TARGET_URL into Environment for the test
+    # "create a env for the parent url per projects"
+    if project.get('baseUrl'):
+         print(f"Setting TARGET_URL = {project['baseUrl']}")
+         os.environ["TARGET_URL"] = project['baseUrl']
 
     # 2. Load Script
     module = load_project_module(project_slug)
