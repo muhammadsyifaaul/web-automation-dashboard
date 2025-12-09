@@ -45,6 +45,7 @@ export const runTest = async (projectId?: string, testFilter?: string) => {
     }
 };
 
+
 // Project APIs
 export const getProjects = async () => {
     const response = await api.get<{ success: boolean; data: Project[] }>('/projects');
