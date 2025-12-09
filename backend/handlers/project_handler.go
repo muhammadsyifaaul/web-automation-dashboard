@@ -108,27 +108,30 @@ func GetProjectTests(c *fiber.Ctx) error {
 	slug = strings.ReplaceAll(slug, "-", "_")
 
 	// 3. Find File
-	// Assumption: Backend is running from /backend directory, so automation is at ../automation
-	// Or use an env var for automation path. Using relative path for now.
 	cwd, _ := os.Getwd()
-	// Navigate up if we are in backend dir
 	rootPath := filepath.Dir(cwd)
 	if filepath.Base(cwd) != "backend" {
-		// Fallback if not running from backend dir directly (e.g. running from root)
 		if _, err := os.Stat(filepath.Join(cwd, "automation")); err == nil {
 			rootPath = cwd
 		}
 	} else {
-		// If in backend, root is parent
 		rootPath = filepath.Dir(cwd)
+	}
+
+	// Check if folder exists, if not, try fallbacks
+	projectPath := filepath.Join(rootPath, "automation", "projects", slug)
+	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
+		if strings.Contains(slug, "ams4u") {
+			slug = "ams4u_cms_auto"
+		} else if strings.Contains(slug, "demo") {
+			slug = "demo_e_commerce"
+		}
 	}
 
 	testPath := filepath.Join(rootPath, "automation", "projects", slug, "tests.py")
 
 	content, err := os.ReadFile(testPath)
 	if err != nil {
-		// Try fallback names if simple slug mapping fails, or return empty
-		// For now return empty list usually means file not found or no tests
 		return utils.SendError(c, fiber.StatusNotFound, "Test file not found: "+testPath)
 	}
 
