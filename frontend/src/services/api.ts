@@ -29,11 +29,12 @@ export const getStats = async () => {
     return response.data.data;
 };
 
-export const runTest = async (projectId?: string) => {
+export const runTest = async (projectId?: string, testFilter?: string) => {
     try {
         const response = await api.post('/queue-job', {
             projectId: projectId,
-            type: 'FullSuite'
+            type: testFilter ? 'SingleTest' : 'FullSuite',
+            testFilter: testFilter
         });
         return response.data;
     } catch (error: any) {
@@ -62,6 +63,11 @@ export const createProject = async (name: string, baseUrl: string) => {
 
 export const getProjectResults = async (id: string) => {
     const response = await api.get<{ success: boolean; data: TestResult[] }>('/projects/' + id + '/results');
+    return response.data.data;
+};
+
+export const getProjectTests = async (id: string) => {
+    const response = await api.get<{ success: boolean; data: string[] }>('/projects/' + id + '/tests');
     return response.data.data;
 };
 

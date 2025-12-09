@@ -17,8 +17,9 @@ import (
 // QueueJob adds a new job to the queue
 func QueueJob(c *fiber.Ctx) error {
 	var body struct {
-		ProjectID string `json:"projectId"`
-		Type      string `json:"type"`
+		ProjectID  string `json:"projectId"`
+		Type       string `json:"type"`
+		TestFilter string `json:"testFilter"`
 	}
 
 	if err := c.BodyParser(&body); err != nil {
@@ -41,11 +42,12 @@ func QueueJob(c *fiber.Ctx) error {
 	}
 
 	job := models.Job{
-		ProjectID: projID,
-		Type:      jobType,
-		Status:    models.StatusPending,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ProjectID:  projID,
+		Type:       jobType,
+		TestFilter: body.TestFilter,
+		Status:     models.StatusPending,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 
 	_, err := database.Collection.Database().Collection("jobs").InsertOne(context.Background(), job)

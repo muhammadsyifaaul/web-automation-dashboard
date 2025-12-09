@@ -142,6 +142,16 @@ def run_job(job):
     
     all_passed = True
     test_functions = [func for name, func in vars(module).items() if callable(func) and name.startswith("run_")]
+
+    # Filter if specific test requested
+    test_filter = job.get('testFilter')
+    if test_filter:
+        print(f"Filter requested: {test_filter}")
+        test_functions = [t for t in test_functions if t.__name__ == test_filter]
+        if not test_functions:
+             print(f"Requested test '{test_filter}' not found in module.")
+             update_job_status(job['id'], "Failed")
+             return
     
     if not test_functions:
         print("No 'run_*' functions found in test script.")

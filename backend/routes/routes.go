@@ -18,6 +18,7 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/projects", handlers.GetProjects)
 	api.Get("/projects/:id", handlers.GetProject)
 	api.Get("/projects/:id/results", handlers.GetProjectResults)
+	api.Get("/projects/:id/tests", handlers.GetProjectTests)
 	api.Post("/projects", handlers.CreateProject)
 
 	// Job Queue
