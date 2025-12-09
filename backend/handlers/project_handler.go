@@ -158,6 +158,7 @@ func GetProjectTests(c *fiber.Ctx) error {
 	var testPath string
 	found := false
 
+	// Strategy A: Check specific slugs
 	for _, slug := range potentialSlugs {
 		path := filepath.Join(rootPath, "automation", "projects", slug, "tests.py")
 		if _, err := os.Stat(path); err == nil {
@@ -167,8 +168,52 @@ func GetProjectTests(c *fiber.Ctx) error {
 		}
 	}
 
+	// Strategy B: Scan directory and fuzzy match
 	if !found {
-		return utils.SendError(c, fiber.StatusNotFound, "Test file not found. Checked: "+strings.Join(potentialSlugs, ", "))
+		projectsPath := filepath.Join(rootPath, "automation", "projects")
+		entries, err := os.ReadDir(projectsPath)
+		if err == nil {
+			for _, entry := range entries {
+				if entry.IsDir() {
+					dirName := entry.Name()
+					// Check if directory name is contained in slugs or vice-versa
+					// Or if it matches "ams4u" for known case
+					if strings.Contains(dirName, "ams4u") && strings.Contains(nameSlug, "ams4u") {
+						testPath = filepath.Join(projectsPath, dirName, "tests.py")
+						found = true
+						potentialSlugs = append(potentialSlugs, "MATCHED: "+dirName)
+						break
+					}
+					// Generic contains check
+					for _, slug := range potentialSlugs {
+						if strings.Contains(dirName, slug) || strings.Contains(slug, dirName) {
+							testPath = filepath.Join(projectsPath, dirName, "tests.py")
+							found = true
+							break
+						}
+					}
+				}
+				if found {
+					break
+				}
+			}
+		} else {
+			potentialSlugs = append(potentialSlugs, "ERROR_READING_DIR: "+projectsPath)
+		}
+	}
+
+	if !found {
+		// List available folders in error message for easier debugging
+		var available []string
+		entries, _ := os.ReadDir(filepath.Join(rootPath, "automation", "projects"))
+		for _, e := range entries {
+			if e.IsDir() {
+				available = append(available, e.Name())
+			}
+		}
+
+		msg := "Test file not found. Checked: " + strings.Join(potentialSlugs, ", ") + ". Available: " + strings.Join(available, ", ")
+		return utils.SendError(c, fiber.StatusNotFound, msg)
 	}
 
 	content, err := os.ReadFile(testPath)
