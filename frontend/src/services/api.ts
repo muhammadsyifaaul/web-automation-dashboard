@@ -67,10 +67,7 @@ export const getProjectResults = async (id: string) => {
     return response.data.data;
 };
 
-export const getProjectTests = async (id: string) => {
-    const response = await api.get<{ success: boolean; data: string[] }>('/projects/' + id + '/tests');
-    return response.data.data;
-};
+
 
 export const getWorkerStatus = async () => {
     const response = await api.get<{ online: boolean; lastSeen: string }>('/worker-status');
