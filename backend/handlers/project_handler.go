@@ -168,33 +168,52 @@ func GetProjectTests(c *fiber.Ctx) error {
 		}
 	}
 
-	// Strategy B: Scan directory and fuzzy match
+	// Strategy B: Scan directory and fuzzy match (Token overlap)
 	if !found {
 		projectsPath := filepath.Join(rootPath, "automation", "projects")
 		entries, err := os.ReadDir(projectsPath)
 		if err == nil {
+			var bestDir string
+			var maxScore int
+
+			// Tokens from Project Data
+			// Combine Name and URL for keywords
+			targetText := project.Name + " " + project.BaseURL
+			targetTokens := tokenize(targetText)
+
 			for _, entry := range entries {
 				if entry.IsDir() {
 					dirName := entry.Name()
-					// Check if directory name is contained in slugs or vice-versa
-					// Or if it matches "ams4u" for known case
-					if strings.Contains(dirName, "ams4u") && strings.Contains(nameSlug, "ams4u") {
-						testPath = filepath.Join(projectsPath, dirName, "tests.py")
-						found = true
-						potentialSlugs = append(potentialSlugs, "MATCHED: "+dirName)
-						break
-					}
-					// Generic contains check
-					for _, slug := range potentialSlugs {
-						if strings.Contains(dirName, slug) || strings.Contains(slug, dirName) {
-							testPath = filepath.Join(projectsPath, dirName, "tests.py")
-							found = true
-							break
+					dirTokens := tokenize(dirName)
+
+					score := 0
+					for _, dt := range dirTokens {
+						for _, tt := range targetTokens {
+							if dt == tt {
+								score++
+								break // Count each dir token once
+							}
 						}
 					}
+
+					// Extra boost for "ams4u" since it's a known tough case
+					if strings.Contains(dirName, "ams4u") && strings.Contains(targetText, "ams4u") {
+						score += 5
+					}
+
+					if score > maxScore {
+						maxScore = score
+						bestDir = dirName
+					}
 				}
-				if found {
-					break
+			}
+
+			if maxScore > 0 && bestDir != "" {
+				testPath = filepath.Join(projectsPath, bestDir, "tests.py")
+				// Verify it exists
+				if _, err := os.Stat(testPath); err == nil {
+					found = true
+					potentialSlugs = append(potentialSlugs, "FuzzyMatch: "+bestDir)
 				}
 			}
 		} else {
@@ -234,4 +253,12 @@ func GetProjectTests(c *fiber.Ctx) error {
 	}
 
 	return utils.SendSuccess(c, tests)
+}
+
+func tokenize(s string) []string {
+	s = strings.ToLower(s)
+	f := func(c rune) bool {
+		return !((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
+	}
+	return strings.FieldsFunc(s, f)
 }
