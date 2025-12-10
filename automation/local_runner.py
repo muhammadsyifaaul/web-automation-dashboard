@@ -220,17 +220,14 @@ def main():
     print(f"Starting Multi-Project Automation Worker.")
     print(f"Backend: {BACKEND_URL}")
     
-    # Optional: Clear Queue
+    # Auto-Clear Queue on Startup
     print("----------------------------------------------------------------")
-    print("  Do you want to CLEAR valid pending jobs before starting?")
-    print("  Type 'y' to clear, or press Enter to process existing queue.")
-    msg = input("  Choice [y/N]: ").strip().lower()
-    if msg == 'y':
-        try:
-            requests.delete(f"{BACKEND_URL}/jobs/queue")
-            print("  Queue cleared successfully.")
-        except Exception as e:
-            print(f"  Failed to clear queue: {e}")
+    print("  Auto-clearing pending jobs to prevent backlog execution...")
+    try:
+        requests.delete(f"{BACKEND_URL}/jobs/queue")
+        print("  Queue cleared successfully.")
+    except Exception as e:
+        print(f"  Warning: Failed to clear queue: {e}")
     print("----------------------------------------------------------------")
 
     print(f"Polling every {POLL_INTERVAL}s...")

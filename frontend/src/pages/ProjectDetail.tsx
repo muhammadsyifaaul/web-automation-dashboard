@@ -58,21 +58,8 @@ const ProjectDetail: React.FC = () => {
         return () => clearInterval(interval);
     }, [id, notification]);
 
-    const confirmRun = async () => {
-        if (!project) return;
-        setIsSubmitting(true);
-        try {
-            await runTest(project.id, pendingRun || "");
-            setNotification({ message: 'Job Queued Successfully!', type: 'success' });
-        } catch (e: any) {
-            console.error(e);
-            setNotification({ message: 'Failed to queue job: ' + e.message, type: 'error' });
-        } finally {
-            setShowOfflineWarning(false);
-            setPendingRun(null);
-            setIsSubmitting(false);
-        }
-    };
+    // confirmRun removed (Blocking Logic)
+
 
     // Helper to handle execution
     const handleRunTest = async (filter: string = "") => {
@@ -146,27 +133,21 @@ const ProjectDetail: React.FC = () => {
                             <div>
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Worker Offline</h3>
                                 <p className="text-gray-600 dark:text-gray-300">
-                                    The Automation Worker appears to be offline. Tests will be <strong>queued</strong> but won't start until the worker acts up.
+                                    The Automation Worker is currently offline. <br />
+                                    <strong>You cannot queue tests until the worker connects.</strong>
                                 </p>
                             </div>
                         </div>
-                        <div className="p-6 bg-white dark:bg-gray-800 flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700">
+                        <div className="p-6 bg-white dark:bg-gray-800 flex justify-center border-t border-gray-100 dark:border-gray-700">
                             <button
                                 onClick={() => {
-                                    console.log("User cancelled execution.");
                                     setShowOfflineWarning(false);
                                     setPendingRun(null);
                                     setIsSubmitting(false);
                                 }}
-                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                                className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white rounded-lg transition-colors font-medium"
                             >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={confirmRun}
-                                className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors font-medium shadow-lg shadow-yellow-500/30"
-                            >
-                                Queue Anyway
+                                Close
                             </button>
                         </div>
                     </div>
