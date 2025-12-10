@@ -16,3 +16,13 @@ export interface Stats {
     passed: number;
     failed: number;
 }
+
+
+export interface ProjectCase {
+    id: string;
+    projectId: string;
+    name: string;
+    identifier: string;
+    description: string;
+    createdAt: string;
+}

@@ -67,6 +67,22 @@ export const getProjectResults = async (id: string) => {
     return response.data.data;
 };
 
+// Case Management
+export const getProjectCases = async (projectId: string) => {
+    const response = await api.get<{ success: boolean; data: any[] }>(`/projects/${projectId}/cases`);
+    return response.data.data;
+};
+
+export const createProjectCase = async (projectId: string, data: { name: string; identifier: string; description: string }) => {
+    const response = await api.post<{ success: boolean; data: any }>(`/projects/${projectId}/cases`, data);
+    return response.data.data;
+};
+
+export const deleteProjectCase = async (caseId: string) => {
+    const response = await api.delete<{ success: boolean }>(`/cases/${caseId}`);
+    return response.data;
+};
+
 
 
 export const getWorkerStatus = async () => {

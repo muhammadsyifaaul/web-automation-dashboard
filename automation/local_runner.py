@@ -107,28 +107,27 @@ def run_job(job):
     
     # Priority: Explicit Directory > Name Slug
     if project.get('directory'):
-         project_slug = project['directory']
+        project_slug = project['directory']
     
     print(f"Project: {project['name']} -> Slug: {project_slug}")
 
     # Inject TARGET_URL into Environment for the test
-    # "create a env for the parent url per projects"
     if project.get('baseUrl'):
-         print(f"Setting TARGET_URL = {project['baseUrl']}")
-         os.environ["TARGET_URL"] = project['baseUrl']
+        print(f"Setting TARGET_URL = {project['baseUrl']}")
+        os.environ["TARGET_URL"] = project['baseUrl']
 
     # 2. Load Script
     module = load_project_module(project_slug)
     if not module:
         print(f"Could not load test module for {project_slug}. Please create 'automation/projects/{project_slug}/tests.py'.")
         
-        # Fallbacks
+        # Fallback
         if "demo" in project_slug:
             print("Trying fallback to 'demo_e_commerce'...")
             module = load_project_module("demo_e_commerce")
         elif "ams4u" in project_slug:
-             print("Trying fallback to 'ams4u_cms_auto'...")
-             module = load_project_module("ams4u_cms_auto")
+            print("Trying fallback to 'ams4u_cms_auto'...")
+            module = load_project_module("ams4u_cms_auto")
 
     if not module:
         update_job_status(job['id'], "Failed")
@@ -148,33 +147,46 @@ def run_job(job):
             return
 
     # 4. Execute Tests
-    # We expect the module to have a function `run_tests(driver)` or we look for functions starting with `run_`
-    # For backward compatibility with the previous `run_login_test` style
-    
     all_passed = True
     test_functions = [func for name, func in vars(module).items() if callable(func) and name.startswith("run_")]
 
-    # Filter if specific test requested
+    # Optional Filter
     test_filter = job.get('testFilter')
+    filtered_functions = []
+
     if test_filter:
         print(f"Filter requested: {test_filter}")
-        test_functions = [t for t in test_functions if t.__name__ == test_filter]
-        if not test_functions:
-             print(f"Requested test '{test_filter}' not found in module.")
-             update_job_status(job['id'], "Failed")
-             return
+        # 1. Try exact match
+        exact_matches = [t for t in test_functions if t.__name__ == test_filter]
+        if exact_matches:
+            filtered_functions = exact_matches
+        else:
+            # 2. No exact match - assume it's data for a dispatcher
+            print(f"Filter '{test_filter}' not found as a function name. Passing to all runners as context.")
+            filtered_functions = test_functions
+    else:
+        filtered_functions = test_functions
     
-    if not test_functions:
+    if not filtered_functions:
         print("No 'run_*' functions found in test script.")
         update_job_status(job['id'], "Failed")
         return
 
-    for test_func in test_functions:
+    import inspect # Ensure inspect is available (add to imports if missing, but better handle here or top)
+
+    for test_func in filtered_functions:
         test_name = test_func.__name__
         print(f" Running {test_name}...")
         try:
-            # Execute
-            result = test_func(DRIVER_INSTANCE) # Expects {status: 'PASS'/'FAIL', ...}
+            # Check Signature
+            sig = inspect.signature(test_func)
+            if len(sig.parameters) >= 2:
+                # Expects driver + job/context
+                result = test_func(DRIVER_INSTANCE, job)
+            else:
+                result = test_func(DRIVER_INSTANCE) # Legacy support
+            
+            # Enrich Result with Project ID
             
             # Enrich Result with Project ID
             result['projectId'] = project_id
@@ -203,10 +215,8 @@ def main():
     while True:
         try:
             # Send Heartbeat
-            try:
-                requests.post(f"{BACKEND_URL}/worker-heartbeat")
-            except:
-                pass
+            try: requests.post(f"{BACKEND_URL}/worker-heartbeat", timeout=2) 
+            except: pass
 
             job = get_next_job()
             if job:

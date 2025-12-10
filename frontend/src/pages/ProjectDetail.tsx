@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProject, getProjectResults } from '../services/api';
-import { Project, TestResult } from '../types';
+import { getProject, getProjectResults, getProjectCases, createProjectCase, deleteProjectCase, runTest } from '../services/api';
+import { Project, TestResult, ProjectCase } from '../types';
 import StatsCard from '../components/StatsCard';
 import ResultTable from '../components/ResultTable';
 import RunTestButton from '../components/RunTestButton';
@@ -11,17 +11,24 @@ const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [project, setProject] = useState<Project | null>(null);
     const [results, setResults] = useState<TestResult[]>([]);
+    const [projectCases, setProjectCases] = useState<ProjectCase[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedResult, setSelectedResult] = useState<TestResult | null>(null);
+
+    // Case Form State
+    const [showAddCase, setShowAddCase] = useState(false);
+    const [newCase, setNewCase] = useState({ name: '', identifier: '', description: '' });
 
     const loadData = async () => {
         if (!id) return;
         try {
-            const [projData, resData] = await Promise.all([
+            const [projData, resData, casesData] = await Promise.all([
                 getProject(id),
-                getProjectResults(id)
+                getProjectResults(id),
+                getProjectCases(id)
             ]);
             setProject(projData);
+            setProjectCases(casesData || []);
             // Sort results descending
             const sortedResults = resData.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
             setResults(sortedResults);
@@ -74,10 +81,10 @@ const ProjectDetail: React.FC = () => {
                     </a>
                 </div>
                 <div className="flex items-center gap-4">
-                    <RunTestButton
-                        onRunComplete={() => {/* Handled by polling */ }}
-                        projectId={project.id} // We need to update RunTestButton to accept projectId
-                    />
+                    {/* 
+                  Legacy Run Button removed or hidden in favor of Case Manager. 
+                  Or we can keep it as a "Quick Run" for the default case.
+               */}
                 </div>
             </header>
 
@@ -87,6 +94,108 @@ const ProjectDetail: React.FC = () => {
                 <StatsCard title="Pass Rate" value={`${passRate}%`} color="border-green-500" />
                 <StatsCard title="Avg Duration" value={`${avgDuration}s`} color="border-yellow-500" />
                 <StatsCard title="Last Run" value={results[0] ? new Date(results[0].timestamp).toLocaleDateString() : 'Never'} color="border-purple-500" />
+            </div>
+
+            {/* Case Management Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h2 className="text-xl font-bold dark:text-white">Test Cases</h2>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => runTest(project.id, "")}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            Run All Cases
+                        </button>
+                        <button
+                            onClick={() => setShowAddCase(!showAddCase)}
+                            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white rounded-lg transition-colors"
+                        >
+                            {showAddCase ? 'Cancel' : '+ Add Case'}
+                        </button>
+                    </div>
+                </div>
+
+                {showAddCase && (
+                    <div className="p-6 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <input
+                                type="text"
+                                placeholder="Case Name (e.g. Add Item)"
+                                className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                value={newCase.name}
+                                onChange={e => setNewCase({ ...newCase, name: e.target.value })}
+                            />
+                            <input
+                                type="text"
+                                placeholder="Identifier (e.g. /add)"
+                                className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                value={newCase.identifier}
+                                onChange={e => setNewCase({ ...newCase, identifier: e.target.value })}
+                            />
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Description (Optional)"
+                                    className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    value={newCase.description}
+                                    onChange={e => setNewCase({ ...newCase, description: e.target.value })}
+                                />
+                                <button
+                                    onClick={async () => {
+                                        if (!newCase.name || !newCase.identifier) return;
+                                        await createProjectCase(project.id, newCase);
+                                        setNewCase({ name: '', identifier: '', description: '' });
+                                        setShowAddCase(false);
+                                        loadData();
+                                    }}
+                                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium"
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {projectCases.length === 0 ? (
+                        <div className="p-8 text-center text-gray-500">No cases defined. Add one to get started.</div>
+                    ) : (
+                        projectCases.map((testCase) => (
+                            <div key={testCase.id} className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                <div>
+                                    <h3 className="font-medium dark:text-white">{testCase.name}</h3>
+                                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                                        <code className="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-xs font-mono">{testCase.identifier}</code>
+                                        <span>{testCase.description}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => runTest(project.id, testCase.identifier)}
+                                        className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                                        title="Run this case"
+                                    >
+                                        Run
+                                    </button>
+                                    <button
+                                        onClick={async () => {
+                                            if (confirm('Delete this case?')) {
+                                                await deleteProjectCase(testCase.id);
+                                                loadData();
+                                            }
+                                        }}
+                                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                        title="Delete"
+                                    >
+                                        &times;
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
 
             {/* Results Table */}
