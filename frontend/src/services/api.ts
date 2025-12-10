@@ -31,6 +31,9 @@ export const getStats = async () => {
 
 export const runTest = async (projectId?: string, testFilter?: string) => {
     try {
+        // Optional: Check worker status first? Or let backend handle it.
+        // Backend doesn't strictly check worker online for queueing, but UI might want to warn.
+
         const response = await api.post('/queue-job', {
             projectId: projectId,
             type: testFilter ? 'SingleTest' : 'FullSuite',

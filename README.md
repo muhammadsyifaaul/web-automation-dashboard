@@ -1,13 +1,16 @@
-# Multi-Project Automation Dashboard (v2.0)
+# Multi-Project Automation Dashboard (v2.1)
 
 A modular, production-ready QA Automation Platform. Manage multiple websites, queue tests in the cloud, and execute them safely on local machines.
 
-## 🚀 Key Features (v2.0)
+## 🚀 Key Features (v2.1)
+-   **Case Management System**: Define specific test cases (e.g., `/login`, `/add-item`) and execute them individually or as a suite.
 -   **Multi-Project Support**: Manage independent test suites for different websites.
 -   **Hybrid Architecture**:
     -   **Backend/Frontend**: Deployed to Cloud (Render/GitHub Pages).
     -   **Automation**: Runs **LOCALLY** (Secure, no headless servers needed).
+-   **Dispatcher Pattern**: Smart routing of jobs to specific test files based on case identifiers.
 -   **Job Queue**: Backend queues jobs; Local Worker polls and executes them.
+-   **Visual Notifications**: Real-time alerts for worker status and job queuing.
 -   **Dark Mode**: Sleek UI with persistence.
 
 
@@ -44,9 +47,11 @@ python local_runner.py
 
 ## 🧪 How to Add a New Project
 1.  **Dashboard**: click "New Project" and add details.
-2.  **Automation**: Create `automation/projects/<snake_case_name>/tests.py`.
-3.  **Script**: Define functions starting with `run_` (e.g., `run_checkout_flow(driver)`).
-4.  **Run**: Click "Run Test" on the dashboard. The worker will automatically pick the right script!
+2.  **Automation**: Create `automation/projects/<snake_case_name>/`.
+3.  **Dispatcher**: Create `tests.py` using the dispatcher template (see `ams4u_cms_auto/tests.py`).
+4.  **Cases**: Create a `cases/` folder and add `case_<name>.py` files.
+5.  **UI**: Go to Project Details in the dashboard, click "Add Case", and define your cases!
+6.  **Run**: Click "Run" on a specific case or "Run All Cases".
 
 ## 🌍 Deployment
 -   **Frontend**: Deployed via GitHub Actions to GitHub Pages.

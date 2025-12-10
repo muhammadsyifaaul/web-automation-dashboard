@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
                         <FaGithub className="text-xl" />
                         <span>Visit The Repository</span>
                     </a>
-                    <span className="text-xs text-gray-500 hidden md:block">v2.0.0 (Multi-Project)</span>
+                    <span className="text-xs text-gray-500 hidden md:block">v2.1.0 (Case Manager)</span>
                 </div>
             </div>
         </footer>

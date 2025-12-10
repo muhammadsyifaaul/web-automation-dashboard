@@ -14,6 +14,8 @@ const ProjectDetail: React.FC = () => {
     const [projectCases, setProjectCases] = useState<ProjectCase[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedResult, setSelectedResult] = useState<TestResult | null>(null);
+    const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
+
 
     // Case Form State
     const [showAddCase, setShowAddCase] = useState(false);
@@ -42,8 +44,33 @@ const ProjectDetail: React.FC = () => {
     useEffect(() => {
         loadData();
         const interval = setInterval(loadData, 5000); // Poll for updates
+
+        // Clear notification after 3s
+        if (notification) {
+            const timer = setTimeout(() => setNotification(null), 3000);
+            return () => { clearTimeout(timer); clearInterval(interval); };
+        }
         return () => clearInterval(interval);
-    }, [id]);
+    }, [id, notification]);
+
+    // Helper to handle execution
+    const handleRunTest = async (filter: string = "") => {
+        try {
+            // 1. Check worker
+            const workerStatus = await import('../services/api').then(m => m.getWorkerStatus());
+            if (!workerStatus.online) {
+                if (!confirm("The Automation Worker seems to be OFFLINE. The job will be queued but won't start until the worker connects. Continue?")) {
+                    return;
+                }
+            }
+
+            await runTest(project?.id, filter);
+            setNotification({ message: 'Job Queued Successfully!', type: 'success' });
+        } catch (e: any) {
+            console.error(e);
+            setNotification({ message: 'Failed to queue job: ' + e.message, type: 'error' });
+        }
+    };
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
@@ -67,6 +94,17 @@ const ProjectDetail: React.FC = () => {
             <Link to="/" className="inline-flex items-center text-gray-500 hover:text-blue-600 mb-2">
                 <FaArrowLeft className="mr-2" /> Back to Projects
             </Link>
+
+            {/* Notification Toast */}
+            {notification && (
+                <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-xl shadow-lg border animate-fade-in-down ${notification.type === 'success' ? 'bg-green-100 border-green-200 text-green-800' :
+                        notification.type === 'warning' ? 'bg-yellow-100 border-yellow-200 text-yellow-800' :
+                            'bg-red-100 border-red-200 text-red-800'
+                    }`}>
+                    <span className="font-bold mr-2">{notification.type === 'success' ? '✓' : '⚠️'}</span>
+                    {notification.message}
+                </div>
+            )}
 
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                 <div>
@@ -102,7 +140,7 @@ const ProjectDetail: React.FC = () => {
                     <h2 className="text-xl font-bold dark:text-white">Test Cases</h2>
                     <div className="flex gap-2">
                         <button
-                            onClick={() => runTest(project.id, "")}
+                            onClick={() => handleRunTest("")}
                             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
                         >
                             Run All Cases
@@ -173,7 +211,7 @@ const ProjectDetail: React.FC = () => {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button
-                                        onClick={() => runTest(project.id, testCase.identifier)}
+                                        onClick={() => handleRunTest(testCase.identifier)}
                                         className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                                         title="Run this case"
                                     >
