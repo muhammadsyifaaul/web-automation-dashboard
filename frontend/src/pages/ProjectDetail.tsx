@@ -21,6 +21,10 @@ const ProjectDetail: React.FC = () => {
     const [showAddCase, setShowAddCase] = useState(false);
     const [newCase, setNewCase] = useState({ name: '', identifier: '', description: '' });
 
+    // Offline Warning State
+    const [showOfflineWarning, setShowOfflineWarning] = useState(false);
+    const [pendingRun, setPendingRun] = useState<string | null>(null);
+
     const loadData = async () => {
         if (!id) return;
         try {
@@ -53,19 +57,36 @@ const ProjectDetail: React.FC = () => {
         return () => clearInterval(interval);
     }, [id, notification]);
 
+    const confirmRun = async () => {
+        if (!project) return;
+        try {
+            await runTest(project.id, pendingRun || "");
+            setNotification({ message: 'Job Queued Successfully!', type: 'success' });
+        } catch (e: any) {
+            console.error(e);
+            setNotification({ message: 'Failed to queue job: ' + e.message, type: 'error' });
+        } finally {
+            setShowOfflineWarning(false);
+            setPendingRun(null);
+        }
+    };
+
     // Helper to handle execution
     const handleRunTest = async (filter: string = "") => {
         try {
-            // 1. Check worker
             const workerStatus = await import('../services/api').then(m => m.getWorkerStatus());
+
             if (!workerStatus.online) {
-                if (!confirm("The Automation Worker seems to be OFFLINE. The job will be queued but won't start until the worker connects. Continue?")) {
-                    return;
-                }
+                // Show Custom Modal
+                setPendingRun(filter);
+                setShowOfflineWarning(true);
+                return;
             }
 
+            // If online, run immediately
             await runTest(project?.id, filter);
             setNotification({ message: 'Job Queued Successfully!', type: 'success' });
+
         } catch (e: any) {
             console.error(e);
             setNotification({ message: 'Failed to queue job: ' + e.message, type: 'error' });
@@ -98,11 +119,47 @@ const ProjectDetail: React.FC = () => {
             {/* Notification Toast */}
             {notification && (
                 <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-xl shadow-lg border animate-fade-in-down ${notification.type === 'success' ? 'bg-green-100 border-green-200 text-green-800' :
-                        notification.type === 'warning' ? 'bg-yellow-100 border-yellow-200 text-yellow-800' :
-                            'bg-red-100 border-red-200 text-red-800'
+                    notification.type === 'warning' ? 'bg-yellow-100 border-yellow-200 text-yellow-800' :
+                        'bg-red-100 border-red-200 text-red-800'
                     }`}>
                     <span className="font-bold mr-2">{notification.type === 'success' ? '✓' : '⚠️'}</span>
                     {notification.message}
+                </div>
+            )}
+
+            {/* Offline Warning Modal */}
+            {showOfflineWarning && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full shadow-2xl overflow-hidden border border-yellow-200 dark:border-yellow-700/50">
+                        <div className="bg-yellow-50 dark:bg-yellow-900/30 p-6 flex flex-col items-center text-center gap-4">
+                            <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/50 rounded-full flex items-center justify-center">
+                                <span className="text-3xl">⚠️</span>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Worker Offline</h3>
+                                <p className="text-gray-600 dark:text-gray-300">
+                                    The Automation Worker appears to be offline. Tests will be <strong>queued</strong> but won't start until the worker acts up.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="p-6 bg-white dark:bg-gray-800 flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700">
+                            <button
+                                onClick={() => {
+                                    setShowOfflineWarning(false);
+                                    setPendingRun(null);
+                                }}
+                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmRun}
+                                className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors font-medium shadow-lg shadow-yellow-500/30"
+                            >
+                                Queue Anyway
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
 
