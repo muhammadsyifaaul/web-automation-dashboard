@@ -11,6 +11,7 @@ import (
 )
 
 var Client *mongo.Client
+var DB *mongo.Database
 var Collection *mongo.Collection
 
 func Connect() {
@@ -33,6 +34,7 @@ func Connect() {
 	}
 
 	Client = client
-	Collection = client.Database("automation_dashboard").Collection("results")
+	DB = client.Database("automation_dashboard")
+	Collection = DB.Collection("results")
 	log.Println("Connected to MongoDB Atlas")
 }
