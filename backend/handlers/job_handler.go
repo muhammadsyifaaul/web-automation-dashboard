@@ -123,3 +123,14 @@ func UpdateJobStatus(c *fiber.Ctx) error {
 
 	return utils.SendSuccess(c, "Job status updated")
 }
+
+// ClearQueue removes all pending or processing jobs
+func ClearQueue(c *fiber.Ctx) error {
+	_, err := database.Collection.Database().Collection("jobs").DeleteMany(context.Background(), bson.M{
+		"status": bson.M{"$in": []models.JobStatus{models.StatusPending, models.StatusProcessing}},
+	})
+	if err != nil {
+		return utils.SendError(c, fiber.StatusInternalServerError, "Failed to clear queue")
+	}
+	return utils.SendSuccess(c, "Queue cleared successfully")
+}

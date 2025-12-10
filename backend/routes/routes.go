@@ -31,6 +31,7 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/queue-job", handlers.QueueJob)
 	api.Get("/jobs/next", handlers.GetNextJob)
 	api.Post("/jobs/update-status", handlers.UpdateJobStatus)
+	api.Delete("/jobs/queue", handlers.ClearQueue)
 
 	// Worker Heartbeat
 	api.Post("/worker-heartbeat", handlers.RecordHeartbeat)
