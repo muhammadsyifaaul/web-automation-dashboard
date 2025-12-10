@@ -89,6 +89,7 @@ def run_job(job):
     global DRIVER_INSTANCE
     
     print(f"Processing Job {job['id']}...")
+    print(f"DEBUG JOB CONTENT: {job}")
     
     # 1. Identify Project
     project_id = job.get('projectId')

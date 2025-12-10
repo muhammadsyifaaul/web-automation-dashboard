@@ -41,6 +41,16 @@ func QueueJob(c *fiber.Ctx) error {
 		jobType = "FullSuite"
 	}
 
+	// Prevent specific duplicate jobs (Same project, same status=Pending)
+	// This helps prevent accidental loops or double-submissions
+	count, _ := database.Collection.Database().Collection("jobs").CountDocuments(context.Background(), bson.M{
+		"projectId": projID,
+		"status":    models.StatusPending,
+	})
+	if count > 0 {
+		return utils.SendError(c, fiber.StatusConflict, "A job for this project is already pending.")
+	}
+
 	job := models.Job{
 		ProjectID:  projID,
 		Type:       jobType,
@@ -49,6 +59,9 @@ func QueueJob(c *fiber.Ctx) error {
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	}
+
+	// Debug Log
+	println("Queueing Job. Filter:", body.TestFilter, "Type:", jobType)
 
 	_, err := database.Collection.Database().Collection("jobs").InsertOne(context.Background(), job)
 	if err != nil {
