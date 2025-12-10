@@ -106,6 +106,7 @@ def run_job(job):
     project_slug = sanitize_project_name(project['name'])
     
     # Priority: Explicit Directory > Name Slug
+    # Priority: Explicit Directory > Name Slug
     if project.get('directory'):
         project_slug = project['directory']
     
@@ -119,15 +120,21 @@ def run_job(job):
     # 2. Load Script
     module = load_project_module(project_slug)
     if not module:
-        print(f"Could not load test module for {project_slug}. Please create 'automation/projects/{project_slug}/tests.py'.")
+        print(f"Could not load test module for {project_slug}. Looking for fallbacks...")
         
-        # Fallback
-        if "demo" in project_slug:
-            print("Trying fallback to 'demo_e_commerce'...")
-            module = load_project_module("demo_e_commerce")
-        elif "ams4u" in project_slug:
-            print("Trying fallback to 'ams4u_cms_auto'...")
-            module = load_project_module("ams4u_cms_auto")
+        # Mapping known failures to existing folders
+        # Update this mapping as you rename projects in DB vs Folders
+        fallback_slug = None
+        if "ams4u" in project_slug:
+            fallback_slug = "ams4u_cms_auto"
+        elif "demo" in project_slug:
+             fallback_slug = "demo_e_commerce"
+        
+        if fallback_slug:
+             print(f"Trying fallback slug: '{fallback_slug}'")
+             module = load_project_module(fallback_slug)
+             if module:
+                 print(f"Fallback successful: Using '{fallback_slug}'")
 
     if not module:
         update_job_status(job['id'], "Failed")
@@ -203,8 +210,9 @@ def run_job(job):
             all_passed = False
 
     final_status = "Completed" if all_passed else "Failed"
+    print(f"Job Finished: {final_status} (Passed: {all_passed})")
     update_job_status(job['id'], final_status)
-    print(f"Job Finished: {final_status}")
+    print("---------------------------------------------------------------")
     cleanup_driver()
 
 def main():

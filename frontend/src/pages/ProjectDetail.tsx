@@ -15,6 +15,7 @@ const ProjectDetail: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedResult, setSelectedResult] = useState<TestResult | null>(null);
     const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
 
     // Case Form State
@@ -59,6 +60,7 @@ const ProjectDetail: React.FC = () => {
 
     const confirmRun = async () => {
         if (!project) return;
+        setIsSubmitting(true);
         try {
             await runTest(project.id, pendingRun || "");
             setNotification({ message: 'Job Queued Successfully!', type: 'success' });
@@ -68,11 +70,14 @@ const ProjectDetail: React.FC = () => {
         } finally {
             setShowOfflineWarning(false);
             setPendingRun(null);
+            setIsSubmitting(false);
         }
     };
 
     // Helper to handle execution
     const handleRunTest = async (filter: string = "") => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
         try {
             const workerStatus = await import('../services/api').then(m => m.getWorkerStatus());
 
@@ -80,6 +85,7 @@ const ProjectDetail: React.FC = () => {
                 // Show Custom Modal
                 setPendingRun(filter);
                 setShowOfflineWarning(true);
+                setIsSubmitting(false); // Let user interact with modal
                 return;
             }
 
@@ -90,6 +96,8 @@ const ProjectDetail: React.FC = () => {
         } catch (e: any) {
             console.error(e);
             setNotification({ message: 'Failed to queue job: ' + e.message, type: 'error' });
+        } finally {
+            if (!showOfflineWarning) setIsSubmitting(false);
         }
     };
 
@@ -198,8 +206,10 @@ const ProjectDetail: React.FC = () => {
                     <div className="flex gap-2">
                         <button
                             onClick={() => handleRunTest("")}
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                            disabled={isSubmitting}
+                            className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
+                            {isSubmitting && <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>}
                             Run All Cases
                         </button>
                         <button
@@ -269,7 +279,8 @@ const ProjectDetail: React.FC = () => {
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => handleRunTest(testCase.identifier)}
-                                        className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                                        disabled={isSubmitting}
+                                        className={`p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         title="Run this case"
                                     >
                                         Run
