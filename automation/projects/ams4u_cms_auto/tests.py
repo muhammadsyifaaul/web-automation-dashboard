@@ -69,27 +69,14 @@ def run_dispatcher(driver, job):
     # 1. Dispatch Logic
     if not filter_val:
         # EXECUTE ALL CASES
-        print("[AMS4U] No filter provided. Executing ALL cases in cases/ directory...")
+        print("--------------------------------------------------")
+        print("[AMS4U] MODE: RUN ALL CASES (No Filter)")
+        print("--------------------------------------------------")
+        
         case_files = glob.glob(os.path.join(cases_dir, "case_*.py"))
-        results = []
-        
-        # Note: 'local_runner.py' expects a single result dict if we return one.
-        # But if we run multiple tests, we might want to return a summary or handle it differently.
-        # However, local_runner currently only supports one return value per 'run_job' call if the function returns.
-        # Wait! 'local_runner.py' calls 'test_func(DRIVER_INSTANCE)'.
-        # If 'run_dispatcher' is the ONLY test function in 'tests.py' (which it effectively is due to filtering logic),
-        # then it runs once.
-        # BUT 'local_runner' loop iterates over 'run_*' functions.
-        # If I want to run multiple tests, I should probably return a list of results?
-        # Checking local_runner: line 173: result = test_func(...) -> line 180: requests.post(..., json=result).
-        # It expects a SINGLE result dict.
-        
-        # Issue: The current runner architecture expects a 1-to-1 mapping of TestFunction -> Result.
-        # If Dispatcher runs multiple internal tests, it can only return ONE result to the backend unless it manually posts results.
-        
-        # Pivot: Manually post sub-results here?
-        # Or return a "Combined" result.
-        
+        if not case_files:
+             return {"testName": "Suite", "status": "FAIL", "message": "No case files found in cases/"}
+
         BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:3000/api")
         import requests
         
@@ -98,15 +85,16 @@ def run_dispatcher(driver, job):
         
         for case_path in case_files:
             filename = os.path.basename(case_path)
-            print(f"-- Executing Case: {filename} --")
+            print(f"[AMS4U] Found Case: {filename}")
             res = run_file(filename)
             
-            # Enrich and Upload Result immediately
+            # Enrich and Upload Result immediately for each case
             res['projectId'] = job.get('projectId')
             try:
+                print(f"[AMS4U] Uploading result for {filename}...")
                 requests.post(f"{BACKEND_URL}/save-result", json=res)
-            except:
-                print("Failed to upload sub-result")
+            except Exception as e:
+                print(f"[AMS4U] Failed to upload sub-result: {e}")
                 
             if res['status'] != "PASS":
                 failures.append(filename)
@@ -116,24 +104,30 @@ def run_dispatcher(driver, job):
             "testName": "Full Suite Execution",
             "status": overall_status,
             "message": f"Executed {len(case_files)} cases. Failures: {failures}" if failures else f"All {len(case_files)} cases passed.",
-            "duration": 0 # TODO: sum durations
+            "duration": 0
         }
 
     else:
         # EXECUTE SPECIFIC CASE
+        print("--------------------------------------------------")
+        print(f"[AMS4U] MODE: RUN SINGLE CASE (Filter: {filter_val})")
+        print("--------------------------------------------------")
+
         target_case_file = None
         target_func_name = None
         
+        # Normalize filter (e.g., /login -> case_login.py)
         if filter_val.startswith("/"):
             slug = filter_val.strip("/").replace("/", "_")
             target_case_file = f"case_{slug}.py"
-            target_func_name = f"{slug}_case"
+            # Optional: target_func_name = f"{slug}_case"
         else:
-            target_case_file = f"case_{filter_val}.py"
-            target_func_name = f"{filter_val}_case"
-            
-            if not os.path.exists(os.path.join(cases_dir, target_case_file)):
-                 target_case_file = filter_val if filter_val.endswith(".py") else f"{filter_val}.py"
-                 target_func_name = None
+            # Maybe they passed "case_login" or "login"
+            clean_name = filter_val.replace(".py", "")
+            if clean_name.startswith("case_"):
+                target_case_file = f"{clean_name}.py"
+            else:
+                target_case_file = f"case_{clean_name}.py"
 
+        print(f"[AMS4U] Resolved target file: {target_case_file}")
         return run_file(target_case_file, target_func_name)

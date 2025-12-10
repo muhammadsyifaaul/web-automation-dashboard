@@ -153,8 +153,10 @@ const ProjectDetail: React.FC = () => {
                         <div className="p-6 bg-white dark:bg-gray-800 flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700">
                             <button
                                 onClick={() => {
+                                    console.log("User cancelled execution.");
                                     setShowOfflineWarning(false);
                                     setPendingRun(null);
+                                    setIsSubmitting(false);
                                 }}
                                 className="px-4 py-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
                             >
