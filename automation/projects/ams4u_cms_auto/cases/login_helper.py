@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-def perform_login(driver, email="muhammadsyifaaulj@gmail.com", password="Secret*123"):
+def perform_login(driver, email="dummy", password="*dummy"):
     """
     Performs the login action for AMS4U.
     This is a helper function to be used by other test cases (e.g. Add, Edit).
