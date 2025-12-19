@@ -5,7 +5,7 @@ import { Project, TestResult, ProjectCase } from '../types';
 import StatsCard from '../components/StatsCard';
 import ResultTable from '../components/ResultTable';
 import RunTestButton from '../components/RunTestButton';
-import { FaArrowLeft, FaGlobe } from 'react-icons/fa';
+import { FaArrowLeft, FaGlobe, FaEye } from 'react-icons/fa';
 
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -21,7 +21,9 @@ const ProjectDetail: React.FC = () => {
     // Case Form State
     const [showAddCase, setShowAddCase] = useState(false);
     const [editingCaseId, setEditingCaseId] = useState<string | null>(null);
+    const [viewingCase, setViewingCase] = useState<ProjectCase | null>(null);
     const [newCase, setNewCase] = useState({ name: '', identifier: '', description: '' });
+    const [isSavingCase, setIsSavingCase] = useState(false);
 
     // Offline Warning State
     const [showOfflineWarning, setShowOfflineWarning] = useState(false);
@@ -237,18 +239,28 @@ const ProjectDetail: React.FC = () => {
                                 <button
                                     onClick={async () => {
                                         if (!newCase.name || !newCase.identifier) return;
-                                        if (editingCaseId) {
-                                            await updateProjectCase(editingCaseId, newCase);
-                                        } else {
-                                            await createProjectCase(project.id, newCase);
+                                        setIsSavingCase(true);
+                                        try {
+                                            if (editingCaseId) {
+                                                await updateProjectCase(editingCaseId, newCase);
+                                            } else {
+                                                await createProjectCase(project.id, newCase);
+                                            }
+                                            setNewCase({ name: '', identifier: '', description: '' });
+                                            setEditingCaseId(null);
+                                            setShowAddCase(false);
+                                            loadData();
+                                        } catch (e) {
+                                            console.error(e);
+                                            alert("Failed to save case");
+                                        } finally {
+                                            setIsSavingCase(false);
                                         }
-                                        setNewCase({ name: '', identifier: '', description: '' });
-                                        setEditingCaseId(null);
-                                        setShowAddCase(false);
-                                        loadData();
                                     }}
-                                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium"
+                                    disabled={isSavingCase}
+                                    className={`px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium flex items-center gap-2 ${isSavingCase ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
+                                    {isSavingCase && <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>}
                                     {editingCaseId ? 'Update' : 'Save'}
                                 </button>
                             </div>
@@ -270,6 +282,13 @@ const ProjectDetail: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => setViewingCase(testCase)}
+                                        className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                                        title="View Details"
+                                    >
+                                        <FaEye />
+                                    </button>
                                     <button
                                         onClick={() => handleRunTest(testCase.identifier)}
                                         disabled={isSubmitting}
@@ -387,6 +406,48 @@ const ProjectDetail: React.FC = () => {
                             <button
                                 onClick={() => setSelectedResult(null)}
                                 className="px-6 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white rounded-lg transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {viewingCase && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden animate-scale-in">
+                        <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
+                            <h2 className="text-xl font-bold dark:text-white">Case Details</h2>
+                            <button onClick={() => setViewingCase(null)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl">&times;</button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Name</label>
+                                <p className="text-gray-900 dark:text-white font-medium text-lg">{viewingCase.name}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Identifier</label>
+                                <code className="bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded text-blue-600 dark:text-blue-400 font-mono block w-full">
+                                    {viewingCase.identifier}
+                                </code>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Description</label>
+                                <p className="text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-900/30 p-3 rounded-lg border border-gray-100 dark:border-gray-700/50">
+                                    {viewingCase.description || 'No description provided.'}
+                                </p>
+                            </div>
+                            <div className="pt-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Created At</label>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    {new Date(viewingCase.createdAt).toLocaleString()}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="p-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                            <button
+                                onClick={() => setViewingCase(null)}
+                                className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-colors"
                             >
                                 Close
                             </button>
