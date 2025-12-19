@@ -1,4 +1,5 @@
 
+import sys
 import os
 import importlib.util
 import traceback
@@ -14,6 +15,10 @@ def run_dispatcher(driver, job):
     
     current_dir = os.path.dirname(__file__)
     cases_dir = os.path.join(current_dir, "cases")
+    
+    # Add cases dir to sys.path to allow imports between cases (e.g. login_helper)
+    if cases_dir not in sys.path:
+        sys.path.append(cases_dir)
     
     # helper to run a single file
     def run_file(filename, func_name_hint=None):
