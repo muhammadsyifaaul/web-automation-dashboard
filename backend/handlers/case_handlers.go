@@ -88,3 +88,38 @@ func DeleteProjectCase(c *fiber.Ctx) error {
 
 	return utils.SendSuccess(c, fiber.Map{"deleted": true})
 }
+
+func UpdateProjectCase(c *fiber.Ctx) error {
+	caseIDParam := c.Params("caseId")
+	caseID, err := primitive.ObjectIDFromHex(caseIDParam)
+	if err != nil {
+		return utils.SendError(c, fiber.StatusBadRequest, "Invalid Case ID")
+	}
+
+	var req struct {
+		Name        string `json:"name"`
+		Identifier  string `json:"identifier"`
+		Description string `json:"description"`
+	}
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.SendError(c, fiber.StatusBadRequest, "Invalid body")
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"name":        req.Name,
+			"identifier":  req.Identifier,
+			"description": req.Description,
+			"updatedAt":   time.Now(),
+		},
+	}
+
+	collection := database.DB.Collection("cases")
+	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": caseID}, update)
+	if err != nil {
+		return utils.SendError(c, fiber.StatusInternalServerError, "Error updating case")
+	}
+
+	return utils.SendSuccess(c, fiber.Map{"updated": true})
+}

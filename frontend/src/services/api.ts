@@ -86,6 +86,11 @@ export const deleteProjectCase = async (caseId: string) => {
     return response.data;
 };
 
+export const updateProjectCase = async (caseId: string, data: { name: string; identifier: string; description: string }) => {
+    const response = await api.put<{ success: boolean; data: any }>(`/cases/${caseId}`, data);
+    return response.data;
+};
+
 
 
 export const getWorkerStatus = async () => {

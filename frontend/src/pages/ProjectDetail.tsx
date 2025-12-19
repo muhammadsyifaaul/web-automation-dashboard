@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProject, getProjectResults, getProjectCases, createProjectCase, deleteProjectCase, runTest } from '../services/api';
+import { getProject, getProjectResults, getProjectCases, createProjectCase, updateProjectCase, deleteProjectCase, runTest } from '../services/api';
 import { Project, TestResult, ProjectCase } from '../types';
 import StatsCard from '../components/StatsCard';
 import ResultTable from '../components/ResultTable';
@@ -20,6 +20,7 @@ const ProjectDetail: React.FC = () => {
 
     // Case Form State
     const [showAddCase, setShowAddCase] = useState(false);
+    const [editingCaseId, setEditingCaseId] = useState<string | null>(null);
     const [newCase, setNewCase] = useState({ name: '', identifier: '', description: '' });
 
     // Offline Warning State
@@ -196,7 +197,11 @@ const ProjectDetail: React.FC = () => {
                             Run All Cases
                         </button>
                         <button
-                            onClick={() => setShowAddCase(!showAddCase)}
+                            onClick={() => {
+                                setShowAddCase(!showAddCase);
+                                setEditingCaseId(null);
+                                setNewCase({ name: '', identifier: '', description: '' });
+                            }}
                             className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white rounded-lg transition-colors"
                         >
                             {showAddCase ? 'Cancel' : '+ Add Case'}
@@ -232,14 +237,19 @@ const ProjectDetail: React.FC = () => {
                                 <button
                                     onClick={async () => {
                                         if (!newCase.name || !newCase.identifier) return;
-                                        await createProjectCase(project.id, newCase);
+                                        if (editingCaseId) {
+                                            await updateProjectCase(editingCaseId, newCase);
+                                        } else {
+                                            await createProjectCase(project.id, newCase);
+                                        }
                                         setNewCase({ name: '', identifier: '', description: '' });
+                                        setEditingCaseId(null);
                                         setShowAddCase(false);
                                         loadData();
                                     }}
                                     className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium"
                                 >
-                                    Save
+                                    {editingCaseId ? 'Update' : 'Save'}
                                 </button>
                             </div>
                         </div>
@@ -267,6 +277,21 @@ const ProjectDetail: React.FC = () => {
                                         title="Run this case"
                                     >
                                         Run
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setNewCase({
+                                                name: testCase.name,
+                                                identifier: testCase.identifier,
+                                                description: testCase.description
+                                            });
+                                            setEditingCaseId(testCase.id);
+                                            setShowAddCase(true);
+                                        }}
+                                        className="p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 rounded-lg transition-colors"
+                                        title="Edit this case"
+                                    >
+                                        Edit
                                     </button>
                                     <button
                                         onClick={async () => {

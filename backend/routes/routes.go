@@ -23,6 +23,7 @@ func SetupRoutes(app *fiber.App) {
 	// Case Management
 	api.Get("/projects/:id/cases", handlers.GetProjectCases)
 	api.Post("/projects/:id/cases", handlers.CreateProjectCase)
+	api.Put("/cases/:caseId", handlers.UpdateProjectCase)
 	api.Delete("/cases/:caseId", handlers.DeleteProjectCase) // Can also be /projects/:id/cases/:caseId if we want stricter path
 
 	api.Post("/projects", handlers.CreateProject)

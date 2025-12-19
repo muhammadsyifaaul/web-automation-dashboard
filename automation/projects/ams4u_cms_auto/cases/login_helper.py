@@ -3,7 +3,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-def perform_login(driver, email="dummy", password="*dummy"):
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+def perform_login(driver, email=None, password=None):
+    if email is None:
+        email = os.getenv("AMS_EMAIL")
+    if password is None:
+        password = os.getenv("AMS_PASSWORD")
+
     """
     Performs the login action for AMS4U.
     This is a helper function to be used by other test cases (e.g. Add, Edit).

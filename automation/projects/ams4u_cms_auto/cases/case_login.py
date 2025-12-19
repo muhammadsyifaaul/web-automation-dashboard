@@ -4,6 +4,11 @@ import traceback
 from selenium.webdriver.common.by import By
 from utils import resize_and_encode_screenshot
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 def login_case(driver):
     """
     Executes the login test for AMS4U.
@@ -26,8 +31,11 @@ def login_case(driver):
         driver.get("https://cms-ams4u-development-new.qbit.co.id/login")
         
         # 2. Input Credentials
-        driver.find_element(By.ID, "basic_email").send_keys("dummy")
-        driver.find_element(By.ID, "basic_password").send_keys("dummy")
+        email = os.getenv("AMS_EMAIL")
+        password = os.getenv("AMS_PASSWORD")
+
+        driver.find_element(By.ID, "basic_email").send_keys(email)
+        driver.find_element(By.ID, "basic_password").send_keys(password)
         
         # 3. Click Login
         driver.find_element(By.XPATH, "//button[@type='submit']").click()
