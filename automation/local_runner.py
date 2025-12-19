@@ -105,9 +105,7 @@ def run_job(job):
         return
 
     project_slug = sanitize_project_name(project['name'])
-    
-    # Priority: Explicit Directory > Name Slug
-    # Priority: Explicit Directory > Name Slug
+
     if project.get('directory'):
         project_slug = project['directory']
     
@@ -122,9 +120,6 @@ def run_job(job):
     module = load_project_module(project_slug)
     if not module:
         print(f"Could not load test module for {project_slug}. Looking for fallbacks...")
-        
-        # Mapping known failures to existing folders
-        # Update this mapping as you rename projects in DB vs Folders
         fallback_slug = None
         if "ams4u" in project_slug:
             fallback_slug = "ams4u_cms_auto"

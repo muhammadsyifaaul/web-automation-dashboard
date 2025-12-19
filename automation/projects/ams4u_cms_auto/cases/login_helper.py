@@ -14,19 +14,6 @@ def perform_login(driver, email=None, password=None):
     if password is None:
         password = os.getenv("AMS_PASSWORD")
 
-    """
-    Performs the login action for AMS4U.
-    This is a helper function to be used by other test cases (e.g. Add, Edit).
-    It handles the navigation and authentication process.
-    
-    Args:
-        driver: Selenium WebDriver instance
-        email: Email to login with (default: "dummy")
-        password: Password to login with (default: "dummy")
-        
-    Returns:
-        bool: True if login successful (redirected to dashboard), False otherwise
-    """
     print("[AMS4U] Performing Login...")
     
     try:
