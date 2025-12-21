@@ -67,7 +67,7 @@ python local_runner.py
 -   Actual test execution requires the developer’s local machine.
 
 ## 📌 Development Roadmap (Next Version)
-1.  **Automation running in production**
+1.  **Improve reporting & tracker**
 2.  **Daily scheduled test**
 
 ## 📜 License
