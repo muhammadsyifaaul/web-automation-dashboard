@@ -1,4 +1,4 @@
-# Multi-Project Automation Dashboard (v2.1) (BE is under maintain)
+# Multi-Project Automation Dashboard (v2.1) (The Project is Suspended)
 
 A modular, production-ready QA Automation Platform. Manage multiple websites, queue tests in the cloud, and execute them safely on local machines.
 
