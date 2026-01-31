@@ -60,7 +60,6 @@ python local_runner.py
 
 ## ⚠️ Important Notice
 
--   Automation tests cannot run in production(For Now).
 
 -   The backend only queues jobs.
 
@@ -68,7 +67,7 @@ python local_runner.py
 
 ## 📌 Development Roadmap (Next Version)
 1.  **Improve reporting & tracker**
-2.  **Daily scheduled test**
+2.  **API Testing Integration**
 
 ## 📜 License
 AGPL-3.0 license
