@@ -1,4 +1,4 @@
-# Multi-Project Automation Dashboard (v2.1) (The Project is Suspended)
+# Multi-Project Automation Dashboard (v2.1) (The Project is Continued)
 
 A modular, production-ready QA Automation Platform. Manage multiple websites, queue tests in the cloud, and execute them safely on local machines.
 
@@ -69,5 +69,4 @@ python local_runner.py
 1.  **Improve reporting & tracker**
 2.  **API Testing Integration**
 
-## 📜 License
-AGPL-3.0 license
+
